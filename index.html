@@ -17,14 +17,18 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
     <style>
+        /* Modern Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
         .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .msg-enter { animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         #drawing-canvas { cursor: crosshair; touch-action: none; background: #1e293b; border-radius: 8px; }
         .tool-active { background: rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.5); color: #818cf8; }
+        
         body { height: 100vh; width: 100vw; overflow: hidden; }
         main { height: 100%; display: flex; flex-direction: column; }
     </style>
@@ -47,7 +51,7 @@
                     <i data-lucide="key" class="w-3 h-3"></i> Manual Keys
                 </label>
                 <div class="relative">
-                    <input type="password" id="smart-key-input" placeholder="Paste API Key here..." 
+                    <input type="password" id="smart-key-input" placeholder="Paste ANY API Key here..." 
                            class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-white focus:border-indigo-500 outline-none transition-colors"
                            oninput="handleSmartKeyInput(this)">
                     <div id="key-validation-icon" class="absolute right-2 top-2"></div>
@@ -78,7 +82,7 @@
             <div class="p-3 bg-slate-800/20 rounded-lg border border-slate-700/50">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-[10px] font-bold text-slate-400 uppercase">Active Credentials</span>
-                    <button onclick="clearUserKeys()" class="text-[9px] text-red-400 hover:text-red-300 underline">Reset</button>
+                    <button onclick="clearUserKeys()" class="text-[9px] text-red-400 hover:text-red-300 underline">Reset User Keys</button>
                 </div>
                 <div id="key-status-list" class="space-y-1.5">
                     <div class="flex justify-between text-[10px] items-center">
@@ -234,10 +238,10 @@
             const badge = document.getElementById('key-type-badge');
             const icon = document.getElementById('key-validation-icon');
             
-            // Format Validation (Regex)
-            const isGemini = /^AIza[0-9A-Za-z-_]{35}$/.test(val);
-            const isGroq = /^gsk_[0-9A-Za-z]{48,52}$/.test(val);
-            const isHF = /^hf_[0-9A-Za-z]{34}$/.test(val);
+            // Validation
+            const isGemini = val.startsWith("AIza");
+            const isGroq = val.startsWith("gsk_");
+            const isHF = val.startsWith("hf_");
 
             if (isGemini) {
                 USER_KEYS.gemini = val;
@@ -480,9 +484,10 @@
                 activeBadge.innerText = provider;
 
                 // Search
-                const useWeb = document.getElementById('web-toggle').checked;
+                const webToggle = document.getElementById('web-toggle');
                 let webContext = "";
-                if (useWeb && text && !imgData) {
+                // SAFELY CHECK CHECKED STATUS
+                if (webToggle && webToggle.checked && text && !imgData) {
                     try {
                         const searchRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://html.duckduckgo.com/html/?q=' + text)}`, { signal });
                         const json = await searchRes.json();
@@ -551,12 +556,13 @@
                     reply = data.choices?.[0]?.message?.content;
                 }
                 
+                clearTimeout(timeoutId);
                 chatHistory.push({ role: "assistant", content: reply });
                 addMessage('assistant', reply);
 
             } catch (err) {
+                clearTimeout(timeoutId);
                 let msg = err.message;
-                if (err.name === 'AbortError') msg = "Network Timeout (30s). Try again.";
                 // Auto-wipe bad user keys
                 if (msg.includes("401") || msg.includes("API key not valid")) {
                     if (USER_KEYS.gemini || USER_KEYS.groq || USER_KEYS.hf) {
@@ -564,6 +570,7 @@
                         msg += " (Bad User Key Auto-Removed. Try again to use System Key)";
                     }
                 }
+                if (err.name === 'AbortError') msg = "Network Timeout (30s). Try again.";
                 addMessage('assistant', `⚠️ **Error:** ${msg}`);
             } finally {
                 clearTimeout(timeoutId);
