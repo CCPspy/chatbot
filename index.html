@@ -17,20 +17,27 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
     <style>
+        /* Modern Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        
+        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .msg-enter { animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         #drawing-canvas { cursor: crosshair; touch-action: none; background: #1e293b; border-radius: 8px; }
         .tool-active { background: rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.5); color: #818cf8; }
+        
+        /* Ensure chat container takes space properly */
+        body { height: 100vh; width: 100vw; overflow: hidden; }
+        main { height: 100%; display: flex; flex-direction: column; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 h-screen flex overflow-hidden font-sans antialiased selection:bg-indigo-500/30">
+<body class="bg-slate-950 text-slate-100 flex font-sans antialiased selection:bg-indigo-500/30">
 
     <!-- SIDEBAR -->
-    <aside class="w-80 bg-slate-900 border-r border-slate-800 flex flex-col hidden md:flex z-30 shadow-2xl">
+    <aside class="w-80 bg-slate-900 border-r border-slate-800 flex flex-col hidden md:flex z-30 shadow-2xl shrink-0">
         <div class="p-6 border-b border-slate-800">
             <h1 class="text-2xl font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent flex items-center gap-2 tracking-tight">
                 Eric II
@@ -47,8 +54,8 @@
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-indigo-500 transition-colors cursor-pointer text-slate-200 shadow-sm">
                     <option value="auto" selected>✨ Auto-Select (Smartest)</option>
                     <optgroup label="Manual Override">
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Reliable)</option>
-                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental)</option>
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Stable)</option>
+                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (New)</option>
                         <option value="groq-deepseek">DeepSeek R1 (Math/Logic)</option>
                         <option value="groq-llama">Llama 3 (General)</option>
                     </optgroup>
@@ -85,16 +92,16 @@
                         <span class="text-[10px] font-bold text-slate-400 uppercase">Key Status</span>
                     </div>
                     <div id="key-status-list" class="space-y-1">
-                        <div class="flex justify-between text-[10px] text-slate-500"><span>Gemini (GE.txt):</span> <span id="status-gemini" class="text-yellow-500">Loading...</span></div>
-                        <div class="flex justify-between text-[10px] text-slate-500"><span>Groq (GR.txt):</span> <span id="status-groq" class="text-yellow-500">Loading...</span></div>
-                        <div class="flex justify-between text-[10px] text-slate-500"><span>HF (HU.txt):</span> <span id="status-hf" class="text-yellow-500">Loading...</span></div>
+                        <div class="flex justify-between text-[10px] text-slate-500"><span>Gemini (GE.txt):</span> <span id="status-gemini" class="text-yellow-500">Checking...</span></div>
+                        <div class="flex justify-between text-[10px] text-slate-500"><span>Groq (GR.txt):</span> <span id="status-groq" class="text-yellow-500">Checking...</span></div>
+                        <div class="flex justify-between text-[10px] text-slate-500"><span>HF (HU.txt):</span> <span id="status-hf" class="text-yellow-500">Checking...</span></div>
                     </div>
                 </div>
 
                 <!-- Encoder Tool -->
                 <div class="pt-4 border-t border-slate-800">
                     <button onclick="document.getElementById('encoder-tool').classList.toggle('hidden')" class="text-[10px] text-slate-600 hover:text-indigo-400 w-full text-left flex items-center gap-2">
-                        <i data-lucide="lock" class="w-3 h-3"></i> Key Encoder Tool
+                        <i data-lucide="lock" class="w-3 h-3"></i> Key Encrypter Tool
                     </button>
                     <div id="encoder-tool" class="hidden mt-2 p-2 bg-slate-900 border border-slate-800 rounded">
                         <input type="text" id="raw-key-input" placeholder="Paste Plain Key Here" class="w-full bg-slate-950 border border-slate-800 text-[10px] p-1 text-white mb-1">
@@ -107,16 +114,16 @@
     </aside>
 
     <!-- MAIN INTERFACE -->
-    <main class="flex-1 flex flex-col relative bg-slate-950">
+    <main class="flex-1 flex flex-col relative bg-slate-950 h-full w-full">
         
         <!-- Mobile Header -->
-        <header class="md:hidden h-14 bg-slate-900/90 backdrop-blur border-b border-slate-800 flex items-center justify-between px-4 z-20 sticky top-0">
+        <header class="md:hidden h-14 bg-slate-900/90 backdrop-blur border-b border-slate-800 flex items-center justify-between px-4 z-20 sticky top-0 shrink-0">
             <span class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Eric II</span>
             <button onclick="document.querySelector('aside').classList.toggle('hidden')" class="text-slate-400"><i data-lucide="menu"></i></button>
         </header>
 
         <!-- Chat History -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-60 scroll-smooth">
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-64 scroll-smooth w-full">
             <!-- Welcome Screen -->
             <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center opacity-100 transition-opacity duration-500">
                 <div class="relative group mb-6">
@@ -237,6 +244,7 @@
         let API_KEYS = { gemini: [], groq: [], hf: [] };
 
         // --- SMART DECODERS ---
+        // 1. Reverse + Hex Decode
         function decodeHex(hex) {
             try {
                 let str = '';
@@ -247,6 +255,20 @@
             } catch (e) { return null; }
         }
 
+        // 2. Base64 Decode
+        function decodeBase64(str) {
+            try {
+                // Try simple b64 decode then reverse
+                let decoded = atob(str);
+                // Heuristic: If it looks like a key, return it
+                if (decoded.includes("AIza") || decoded.includes("gsk_") || decoded.includes("hf_")) return decoded;
+                // Otherwise try reverse
+                let reversed = decoded.split("").reverse().join("");
+                return reversed;
+            } catch(e) { return null; }
+        }
+
+        // 3. Encryption Tool (For User)
         function secureEncode(text) {
             let reversed = text.split("").reverse().join("");
             let hex = '';
@@ -261,7 +283,7 @@
             if(raw) document.getElementById('encoded-output').innerText = secureEncode(raw);
         }
 
-        // --- KEY LOADER (ROBUST) ---
+        // --- KEY LOADER (SMART UNIVERSAL) ---
         async function loadKeys() {
             try {
                 const ts = new Date().getTime(); // Cache busting
@@ -278,17 +300,24 @@
                     
                     let validKeys = [];
                     for(let line of lines) {
-                        // 1. Check if it is ALREADY a valid plain text key (Fallback)
+                        // 1. CHECK PLAIN TEXT (Fallback)
                         if (line.startsWith(prefix)) { 
                             validKeys.push(line); 
                             continue; 
                         }
 
-                        // 2. Try Hex Decoding
+                        // 2. CHECK HEX
                         let k1 = decodeHex(line);
                         if(k1 && k1.startsWith(prefix)) { 
                             validKeys.push(k1); 
                             continue; 
+                        }
+
+                        // 3. CHECK BASE64 (Backward compatibility)
+                        let k2 = decodeBase64(line);
+                        if(k2 && k2.startsWith(prefix)) {
+                            validKeys.push(k2);
+                            continue;
                         }
                     }
                     return validKeys;
@@ -471,9 +500,9 @@
             let selectedModel = document.getElementById('model-select').value;
             let provider = "GEMINI";
             if (selectedModel === 'auto') {
-                if (imgData) { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI (VISION)"; } // Fixed model name
+                if (imgData) { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI (VISION)"; } // Default stable
                 else if (text.match(/solve|math|calculate|code|python|script|function|logic/i)) { selectedModel = 'groq-deepseek'; provider = "DEEPSEEK R1"; }
-                else { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI"; } // Fixed model name
+                else { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI"; }
             } else {
                 if (selectedModel.includes('groq')) provider = "GROQ";
                 else if (selectedModel.includes('hf')) provider = "MISTRAL/QWEN";
