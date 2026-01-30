@@ -462,6 +462,7 @@
             }
         }
         function fillPrompt(txt) { document.getElementById('user-input').value = txt; handleSend(); }
+        
         function setLoadState(active) {
             const pill = document.getElementById('loading-pill');
             const text = document.getElementById('loading-text');
@@ -555,6 +556,10 @@
             if (!text.match(/remember|previous|context/i)) chatHistory = [];
             chatHistory.push({ role: "user", content: webContext + (text || "Describe this image.") });
 
+            // AbortController for Timeout (Prevents infinite hanging)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second limit
+
             try {
                 let reply = "";
                 // GEMINI
@@ -564,8 +569,10 @@
                     const parts = [{ text: JSON.stringify(chatHistory) }];
                     if (imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${key}`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: parts }] })
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: parts }] }),
+                        signal: controller.signal
                     });
                     const data = await res.json();
                     if(data.error) throw new Error(data.error.message);
@@ -578,8 +585,10 @@
                     if (!key) throw new Error("Missing Groq Key (GR.txt or Manual).");
                     if(imgData) throw new Error("Groq cannot see images. Switch to Gemini.");
                     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                        method: 'POST', headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ messages: [{role: "system", content: SYS_PROMPT}, ...chatHistory], model: selectedModel === 'groq-deepseek' ? 'deepseek-r1-distill-llama-70b' : 'llama-3.3-70b-versatile', temperature: 0.6 })
+                        method: 'POST', 
+                        headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ messages: [{role: "system", content: SYS_PROMPT}, ...chatHistory], model: selectedModel === 'groq-deepseek' ? 'deepseek-r1-distill-llama-70b' : 'llama-3.3-70b-versatile', temperature: 0.6 }),
+                        signal: controller.signal
                     });
                     const data = await res.json();
                     if(data.error) throw new Error(data.error.message);
@@ -592,17 +601,25 @@
                     if(imgData) throw new Error("HF Chat cannot see images.");
                     const modelId = selectedModel === 'hf-qwen' ? "Qwen/Qwen2.5-Coder-32B-Instruct" : "mistralai/Mistral-7B-Instruct-v0.3";
                     const res = await fetch(`https://api-inference.huggingface.co/models/${modelId}/v1/chat/completions`, {
-                        method: "POST", headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-                        body: JSON.stringify({ messages: [{role: "system", content: SYS_PROMPT}, ...chatHistory], max_tokens: 1000 })
+                        method: "POST", 
+                        headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({ messages: [{role: "system", content: SYS_PROMPT}, ...chatHistory], max_tokens: 1000 }),
+                        signal: controller.signal
                     });
                     const data = await res.json();
                     if(data.error) throw new Error(data.error);
                     reply = data.choices?.[0]?.message?.content;
                 }
                 
+                clearTimeout(timeoutId);
                 chatHistory.push({ role: "assistant", content: reply });
                 addMessage('assistant', reply);
-            } catch (err) { addMessage('assistant', `⚠️ **Error:** ${err.message}`); }
+            } catch (err) {
+                clearTimeout(timeoutId);
+                let msg = err.message;
+                if (err.name === 'AbortError') msg = "Network Timeout. Please try again.";
+                addMessage('assistant', `⚠️ **Error:** ${msg}`);
+            }
             setLoadState(false); btn.disabled = false;
         }
 
