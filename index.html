@@ -47,8 +47,8 @@
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-indigo-500 transition-colors cursor-pointer text-slate-200 shadow-sm">
                     <option value="auto" selected>✨ Auto-Select (Smartest)</option>
                     <optgroup label="Manual Override">
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast/Vision)</option>
-                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental)</option>
+                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Newest/Best)</option>
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Standard)</option>
                         <option value="groq-deepseek">DeepSeek R1 (Math/Logic)</option>
                         <option value="groq-llama">Llama 3 (General)</option>
                     </optgroup>
@@ -465,9 +465,9 @@
             let selectedModel = document.getElementById('model-select').value;
             let provider = "GEMINI";
             if (selectedModel === 'auto') {
-                if (imgData) { selectedModel = 'gemini-1.5-flash-001'; provider = "GEMINI (VISION)"; } // Fixed Model Name
+                if (imgData) { selectedModel = 'gemini-2.0-flash-exp'; provider = "GEMINI (VISION)"; } // Updated to 2.0 Flash Exp
                 else if (text.match(/solve|math|calculate|code|python|script|function|logic/i)) { selectedModel = 'groq-deepseek'; provider = "DEEPSEEK R1"; }
-                else { selectedModel = 'gemini-1.5-flash-001'; provider = "GEMINI"; } // Fixed Model Name
+                else { selectedModel = 'gemini-2.0-flash-exp'; provider = "GEMINI"; } // Updated to 2.0 Flash Exp
             } else {
                 if (selectedModel.includes('groq')) provider = "GROQ";
                 else if (selectedModel.includes('hf')) provider = "MISTRAL/QWEN";
