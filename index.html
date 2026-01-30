@@ -47,7 +47,8 @@
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-indigo-500 transition-colors cursor-pointer text-slate-200 shadow-sm">
                     <option value="auto" selected>✨ Auto-Select (Smartest)</option>
                     <optgroup label="Manual Override">
-                        <option value="gemini-1.5-flash">Gemini Flash (Vision/Fast)</option>
+                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Newest)</option>
+                        <option value="gemini-1.5-flash-001">Gemini 1.5 Flash (Stable)</option>
                         <option value="groq-deepseek">DeepSeek R1 (Math/Logic)</option>
                         <option value="groq-llama">Llama 3 (General)</option>
                     </optgroup>
@@ -55,7 +56,7 @@
                 <div class="p-3 bg-indigo-900/20 border border-indigo-500/30 rounded-lg">
                     <p class="text-[10px] text-indigo-300 font-bold mb-1">AUTO-ROUTING ACTIVE</p>
                     <ul class="text-[10px] text-slate-400 space-y-1 list-disc pl-3">
-                        <li>Drawings &rarr; Gemini Vision</li>
+                        <li>Drawings &rarr; Gemini 2.0 Vision</li>
                         <li>Math/Code &rarr; DeepSeek R1</li>
                         <li>Art Requests &rarr; Flux (HF)</li>
                         <li>Chat &rarr; Llama / Gemini</li>
@@ -235,13 +236,11 @@
     <script>
         let API_KEYS = { gemini: [], groq: [], hf: [] };
 
-        // --- NEW ENCRYPTION LOGIC (HEX + REVERSE) ---
-        // Result: 0-9, a-f only. Impossible to break in browser unless you know the algo.
+        // --- ENCRYPTION LOGIC ---
         function secureEncode(text) {
             let reversed = text.split("").reverse().join("");
             let hex = '';
             for(let i=0;i<reversed.length;i++) {
-                // Encode to hex and ensure 2 digits
                 hex += reversed.charCodeAt(i).toString(16).padStart(2, '0');
             }
             return hex;
@@ -257,7 +256,6 @@
             } catch (e) { return null; }
         }
 
-        // Tool function for UI
         function encodeAndShow() {
             const raw = document.getElementById('raw-key-input').value;
             if(raw) document.getElementById('encoded-output').innerText = secureEncode(raw);
@@ -265,7 +263,6 @@
 
         async function loadKeys() {
             try {
-                // Fetch with cache-busting
                 const ts = new Date().getTime();
                 const [geminiRes, groqRes, hfRes] = await Promise.all([
                     fetch(`GE.txt?t=${ts}`), fetch(`GR.txt?t=${ts}`), fetch(`HU.txt?t=${ts}`)
@@ -296,9 +293,7 @@
 
         function getKey(provider) {
             const keys = API_KEYS[provider];
-            if (!keys || keys.length === 0) {
-                return null;
-            }
+            if (!keys || keys.length === 0) return null;
             return keys[Math.floor(Math.random() * keys.length)];
         }
 
@@ -310,7 +305,7 @@
         let currentTool = 'brush';
         const SYS_PROMPT = "You are Eric II. You are an advanced AI assistant. You can see drawings sent by the user. Be concise, helpful, and accurate. Use Markdown. For math, use LaTeX ($$).";
 
-        // Canvas Logic (Standard)
+        // Canvas
         const canvas = document.getElementById('drawing-canvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         let painting = false;
@@ -357,7 +352,7 @@
         canvas.addEventListener('touchmove', draw);
         function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
-        // UI Modes
+        // UI
         function setMode(mode) {
             const textBox = document.getElementById('user-input');
             const canvasBox = document.getElementById('canvas-container');
@@ -414,8 +409,6 @@
             const text = input.value.trim();
             const btn = document.getElementById('send-btn');
             const activeBadge = document.getElementById('active-model-display');
-            
-            // Check Canvas
             let imgData = null;
             if (isDrawing) {
                 const temp = document.createElement('canvas'); temp.width = canvas.width; temp.height = canvas.height;
@@ -426,13 +419,12 @@
             document.getElementById('welcome-screen').style.display = 'none';
             input.value = ''; btn.disabled = true; setLoadState(true);
 
-            // Display User Message
             if (imgData) {
                 addMessage('user', `<img src="data:image/jpeg;base64,${imgData}" class="max-w-[200px] rounded border border-indigo-400 mb-2 bg-white block"> ${text || "Analyze this."}`);
                 clearCanvas();
             } else { addMessage('user', text); }
 
-            // IMAGE GEN
+            // Image Gen
             if (isImageGen || text.toLowerCase().startsWith("imagine")) {
                 activeBadge.innerText = "FLUX (HF)";
                 const hfKey = getKey('hf');
@@ -455,13 +447,13 @@
                 setLoadState(false); btn.disabled = false; return;
             }
 
-            // ROUTING
+            // Routing
             let selectedModel = document.getElementById('model-select').value;
             let provider = "GEMINI";
             if (selectedModel === 'auto') {
-                if (imgData) { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI (VISION)"; }
+                if (imgData) { selectedModel = 'gemini-2.0-flash-exp'; provider = "GEMINI (VISION)"; }
                 else if (text.match(/solve|math|calculate|code|python|script|function|logic/i)) { selectedModel = 'groq-deepseek'; provider = "DEEPSEEK R1"; }
-                else { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI"; }
+                else { selectedModel = 'gemini-2.0-flash-exp'; provider = "GEMINI"; }
             } else {
                 if (selectedModel.includes('groq')) provider = "GROQ";
                 else if (selectedModel.includes('hf')) provider = "MISTRAL/QWEN";
