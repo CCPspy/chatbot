@@ -17,18 +17,14 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
     <style>
-        /* Modern Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        
         .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .msg-enter { animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         #drawing-canvas { cursor: crosshair; touch-action: none; background: #1e293b; border-radius: 8px; }
         .tool-active { background: rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.5); color: #818cf8; }
-        
         body { height: 100vh; width: 100vw; overflow: hidden; }
         main { height: 100%; display: flex; flex-direction: column; }
     </style>
@@ -45,8 +41,7 @@
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 space-y-6">
-            
-            <!-- Manual Override Section (New) -->
+            <!-- Manual Keys -->
             <div class="p-3 bg-indigo-900/10 border border-indigo-500/20 rounded-lg">
                 <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-2 mb-2">
                     <i data-lucide="key" class="w-3 h-3"></i> Manual Keys
@@ -58,7 +53,7 @@
                     <div id="key-type-indicator" class="absolute right-2 top-2 text-[10px] text-slate-500 font-mono"></div>
                 </div>
                 <p class="text-[9px] text-slate-500 mt-1 leading-tight">
-                    System auto-detects: Gemini (AIza...), Groq (gsk_...), or HF (hf_...). User keys override GitHub keys.
+                    System auto-detects: Gemini (AIza...), Groq (gsk_...), or HF (hf_...). Manual overrides file keys.
                 </p>
             </div>
 
@@ -70,8 +65,8 @@
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-indigo-500 transition-colors cursor-pointer text-slate-200 shadow-sm">
                     <option value="auto" selected>✨ Auto-Select (Smartest)</option>
                     <optgroup label="Manual Override">
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Stable)</option>
-                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (New)</option>
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Reliable)</option>
+                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental)</option>
                         <option value="groq-deepseek">DeepSeek R1 (Math/Logic)</option>
                         <option value="groq-llama">Llama 3 (General)</option>
                     </optgroup>
@@ -116,16 +111,12 @@
 
     <!-- MAIN INTERFACE -->
     <main class="flex-1 flex flex-col relative bg-slate-950 h-full w-full">
-        
-        <!-- Mobile Header -->
         <header class="md:hidden h-14 bg-slate-900/90 backdrop-blur border-b border-slate-800 flex items-center justify-between px-4 z-20 sticky top-0 shrink-0">
             <span class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Eric II</span>
             <button onclick="document.querySelector('aside').classList.toggle('hidden')" class="text-slate-400"><i data-lucide="menu"></i></button>
         </header>
 
-        <!-- Chat History -->
         <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-64 scroll-smooth w-full">
-            <!-- Welcome Screen -->
             <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center opacity-100 transition-opacity duration-500">
                 <div class="relative group mb-6">
                     <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
@@ -134,7 +125,7 @@
                     </div>
                 </div>
                 <h2 class="text-3xl font-bold text-white mb-2">Eric II</h2>
-                <p class="text-slate-400 max-w-sm text-sm mb-8">Ready. Paste API keys in the sidebar if system keys fail.</p>
+                <p class="text-slate-400 max-w-sm text-sm mb-8">System Online. Paste API keys in the sidebar if needed.</p>
                 
                 <div class="grid grid-cols-2 gap-3 w-full max-w-md">
                     <button onclick="fillPrompt('Explain quantum physics')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group">
@@ -157,32 +148,20 @@
             </div>
         </div>
 
-        <!-- Floating Footer -->
         <div class="absolute bottom-0 left-0 right-0 z-40">
-            
-            <!-- Loading Indicator -->
             <div id="loading-pill" class="hidden absolute -top-14 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur border border-slate-700/50 text-slate-200 text-xs px-4 py-2 rounded-full shadow-xl flex items-center gap-3">
                 <div class="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                 <span id="loading-text">Processing...</span>
                 <span id="timer-display" class="font-mono text-indigo-400 text-[10px]">0.0s</span>
             </div>
 
-            <!-- Input Container -->
             <div class="p-4 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent">
                 <div class="max-w-4xl mx-auto glass rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 transition-all duration-300" id="input-box">
-                    
-                    <!-- Toolbar -->
                     <div class="h-11 bg-slate-900/50 border-b border-white/5 flex items-center justify-between px-3">
                         <div class="flex items-center bg-slate-950/50 rounded-lg p-1 border border-white/5">
-                            <button onclick="setMode('text')" id="tab-text" class="px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 bg-slate-800 text-white shadow">
-                                <i data-lucide="type" class="w-3 h-3"></i> Text
-                            </button>
-                            <button onclick="setMode('draw')" id="tab-draw" class="px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 text-slate-500 hover:text-slate-300">
-                                <i data-lucide="pencil" class="w-3 h-3"></i> Draw
-                            </button>
+                            <button onclick="setMode('text')" id="tab-text" class="px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 bg-slate-800 text-white shadow"><i data-lucide="type" class="w-3 h-3"></i> Text</button>
+                            <button onclick="setMode('draw')" id="tab-draw" class="px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 text-slate-500 hover:text-slate-300"><i data-lucide="pencil" class="w-3 h-3"></i> Draw</button>
                         </div>
-                        
-                        <!-- Gen Switch -->
                         <div class="flex items-center gap-2 pl-3 border-l border-white/5">
                             <span class="text-[10px] font-bold text-slate-500 uppercase">Create Image</span>
                             <button onclick="toggleImageMode()" id="img-gen-btn" class="w-8 h-4 rounded-full bg-slate-800 relative transition-colors border border-slate-700">
@@ -191,20 +170,10 @@
                         </div>
                     </div>
 
-                    <!-- Content Area -->
                     <div class="p-3 relative bg-slate-900/30">
-                        <!-- Text Mode -->
-                        <textarea id="user-input" rows="1" 
-                            class="w-full bg-transparent border-none outline-none text-slate-200 placeholder-slate-600 resize-none px-2 py-1 max-h-48 text-sm leading-relaxed" 
-                            placeholder="Type a message..."
-                            oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"
-                            onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); handleSend();}"></textarea>
-                        
-                        <!-- Drawing Mode -->
+                        <textarea id="user-input" rows="1" class="w-full bg-transparent border-none outline-none text-slate-200 placeholder-slate-600 resize-none px-2 py-1 max-h-48 text-sm leading-relaxed" placeholder="Type a message..." oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); handleSend();}"></textarea>
                         <div id="canvas-container" class="hidden h-72 w-full relative rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
                             <canvas id="drawing-canvas" class="w-full h-full"></canvas>
-                            
-                            <!-- Tools -->
                             <div class="absolute top-3 left-3 flex flex-col gap-2 bg-slate-900/90 p-2 rounded-lg backdrop-blur border border-slate-800 shadow-xl">
                                 <button onclick="setTool('brush')" id="tool-brush" class="p-2 rounded tool-active"><i data-lucide="paintbrush" class="w-4 h-4"></i></button>
                                 <button onclick="setTool('eraser')" id="tool-eraser" class="p-2 rounded text-slate-500 hover:bg-slate-800"><i data-lucide="eraser" class="w-4 h-4"></i></button>
@@ -212,37 +181,21 @@
                                 <input type="color" id="color-picker" value="#ffffff" class="w-6 h-6 rounded bg-transparent border-none cursor-pointer">
                                 <input type="range" id="brush-size" min="1" max="20" value="3" class="w-6 h-20 writing-mode-vertical appearance-none bg-slate-800 rounded-full overflow-hidden [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-full [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:bg-indigo-500">
                             </div>
-
-                            <button onclick="clearCanvas()" class="absolute top-3 right-3 p-2 bg-slate-900/90 rounded-lg text-red-400 hover:bg-red-500/20 border border-slate-800 transition-colors" title="Clear">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
+                            <button onclick="clearCanvas()" class="absolute top-3 right-3 p-2 bg-slate-900/90 rounded-lg text-red-400 hover:bg-red-500/20 border border-slate-800 transition-colors" title="Clear"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>
 
-                    <!-- Footer Bar -->
                     <div class="h-10 flex justify-between items-center px-3 bg-slate-900/30 border-t border-white/5">
-                        <div class="text-[10px] text-slate-600 font-mono flex items-center gap-2">
-                             <span id="active-model-display" class="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">AUTO-ROUTING</span>
-                             <span class="hidden md:inline">|</span>
-                             <span class="hidden md:inline">History: Auto-Clear</span>
-                        </div>
-                        <button id="send-btn" onclick="handleSend()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-all shadow-lg shadow-indigo-900/20 active:scale-95 flex items-center gap-2">
-                            SEND <i data-lucide="arrow-up" class="w-3 h-3"></i>
-                        </button>
+                        <div class="text-[10px] text-slate-600 font-mono flex items-center gap-2"><span id="active-model-display" class="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">AUTO-ROUTING</span><span class="hidden md:inline">|</span><span class="hidden md:inline">History: Auto-Clear</span></div>
+                        <button id="send-btn" onclick="handleSend()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-all shadow-lg shadow-indigo-900/20 active:scale-95 flex items-center gap-2">SEND <i data-lucide="arrow-up" class="w-3 h-3"></i></button>
                     </div>
                 </div>
-                
-                <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex justify-center gap-4">
-                    <span>Powered by Gemini • HuggingFace • Groq</span>
-                    <span>© Eric</span>
-                    <span>From Willetton SHS</span>
-                </div>
+                <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex justify-center gap-4"><span>Powered by Gemini • HuggingFace • Groq</span><span>© Eric</span><span>From Willetton SHS</span></div>
             </div>
         </div>
     </main>
 
     <script>
-        // Store system keys (from GitHub) and user keys (from input)
         let SYSTEM_KEYS = { gemini: [], groq: [], hf: [] };
         let USER_KEYS = { gemini: null, groq: null, hf: null };
 
@@ -254,7 +207,6 @@
                 return str.split("").reverse().join("");
             } catch (e) { return null; }
         }
-
         function decodeBase64(str) {
             try {
                 let decoded = atob(str);
@@ -262,14 +214,12 @@
                 return decoded.split("").reverse().join("");
             } catch(e) { return null; }
         }
-
         function secureEncode(text) {
             let reversed = text.split("").reverse().join("");
             let hex = '';
             for(let i=0;i<reversed.length;i++) hex += reversed.charCodeAt(i).toString(16).padStart(2, '0');
             return hex;
         }
-
         function encodeAndShow() {
             const raw = document.getElementById('raw-key-input').value;
             if(raw) document.getElementById('encoded-output').innerText = secureEncode(raw);
@@ -279,7 +229,6 @@
         function handleSmartKeyInput(input) {
             const val = input.value.trim();
             const ind = document.getElementById('key-type-indicator');
-            
             if (val.startsWith("AIza")) {
                 USER_KEYS.gemini = val;
                 ind.innerText = "GEMINI"; ind.className = "absolute right-2 top-2 text-[10px] font-bold text-blue-400";
@@ -289,11 +238,7 @@
             } else if (val.startsWith("hf_")) {
                 USER_KEYS.hf = val;
                 ind.innerText = "HF"; ind.className = "absolute right-2 top-2 text-[10px] font-bold text-yellow-400";
-            } else {
-                ind.innerText = "";
-            }
-            
-            // Save to local storage
+            } else { ind.innerText = ""; }
             localStorage.setItem('eric_user_keys', JSON.stringify(USER_KEYS));
             updateAllStatus();
         }
@@ -307,11 +252,8 @@
         }
 
         async function loadKeys() {
-            // Load User Keys
             const saved = localStorage.getItem('eric_user_keys');
             if (saved) USER_KEYS = JSON.parse(saved);
-
-            // Load System Keys
             try {
                 const ts = new Date().getTime();
                 const [geminiRes, groqRes, hfRes] = await Promise.all([
@@ -319,7 +261,6 @@
                     fetch(`GR.txt?v=${ts}`, { cache: "no-store" }), 
                     fetch(`HU.txt?v=${ts}`, { cache: "no-store" })
                 ]);
-
                 const processKeys = async (res, prefix) => {
                     if(!res.ok) return [];
                     const text = await res.text();
@@ -332,41 +273,28 @@
                     }
                     return validKeys;
                 };
-
                 SYSTEM_KEYS.gemini = await processKeys(geminiRes, "AIza");
                 SYSTEM_KEYS.groq = await processKeys(groqRes, "gsk_");
                 SYSTEM_KEYS.hf = await processKeys(hfRes, "hf_");
-
                 updateAllStatus();
-
             } catch (error) { console.error("System Key Load Error", error); }
         }
 
         function updateAllStatus() {
-            updateStatus('gemini');
-            updateStatus('groq');
-            updateStatus('hf');
+            updateStatus('gemini'); updateStatus('groq'); updateStatus('hf');
         }
-
         function updateStatus(provider) {
             const el = document.getElementById(`status-${provider}`);
             if (USER_KEYS[provider]) {
-                el.innerText = "User Key";
-                el.className = "px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30";
+                el.innerText = "User Key"; el.className = "px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30";
             } else if (SYSTEM_KEYS[provider] && SYSTEM_KEYS[provider].length > 0) {
-                el.innerText = "System Ready";
-                el.className = "px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                el.innerText = "System Ready"; el.className = "px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
             } else {
-                el.innerText = "Missing";
-                el.className = "px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30";
+                el.innerText = "Missing"; el.className = "px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30";
             }
         }
-
         function getKey(provider) {
-            // Priority 1: User Manual Key
             if (USER_KEYS[provider]) return USER_KEYS[provider];
-            
-            // Priority 2: System Keys
             const keys = SYSTEM_KEYS[provider];
             if (!keys || keys.length === 0) return null;
             return keys[Math.floor(Math.random() * keys.length)];
@@ -374,83 +302,61 @@
 
         // --- CORE APP LOGIC ---
         let chatHistory = [];
-        let isDrawing = false;
-        let isImageGen = false;
-        let timerInterval, startTime;
-        let currentTool = 'brush';
+        let isDrawing = false; let isImageGen = false;
+        let timerInterval, startTime; let currentTool = 'brush';
         const SYS_PROMPT = "You are Eric II. You are an advanced AI assistant. You can see drawings sent by the user. Be concise, helpful, and accurate. Use Markdown. For math, use LaTeX ($$).";
 
         // Canvas
         const canvas = document.getElementById('drawing-canvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         let painting = false;
-
         function resizeCanvas() {
-            const container = document.getElementById('canvas-container');
-            const rect = container.getBoundingClientRect();
+            const container = document.getElementById('canvas-container'); const rect = container.getBoundingClientRect();
             if (canvas.width !== rect.width || canvas.height !== rect.height) {
-                const saved = canvas.toDataURL();
-                canvas.width = rect.width; canvas.height = rect.height;
-                const img = new Image();
-                img.onload = () => ctx.drawImage(img, 0, 0);
-                img.src = saved;
-                setTool(currentTool);
+                const saved = canvas.toDataURL(); canvas.width = rect.width; canvas.height = rect.height;
+                const img = new Image(); img.onload = () => ctx.drawImage(img, 0, 0); img.src = saved; setTool(currentTool);
             }
         }
         function setTool(tool) {
-            currentTool = tool;
-            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            currentTool = tool; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
             const bBtn = document.getElementById('tool-brush'); const eBtn = document.getElementById('tool-eraser');
             if (tool === 'brush') {
-                bBtn.className = "p-2 rounded tool-active"; eBtn.className = "p-2 rounded text-slate-500 hover:bg-slate-800";
-                ctx.globalCompositeOperation = 'source-over';
+                bBtn.className = "p-2 rounded tool-active"; eBtn.className = "p-2 rounded text-slate-500 hover:bg-slate-800"; ctx.globalCompositeOperation = 'source-over';
             } else {
-                eBtn.className = "p-2 rounded tool-active"; bBtn.className = "p-2 rounded text-slate-500 hover:bg-slate-800";
-                ctx.globalCompositeOperation = 'destination-out';
+                eBtn.className = "p-2 rounded tool-active"; bBtn.className = "p-2 rounded text-slate-500 hover:bg-slate-800"; ctx.globalCompositeOperation = 'destination-out';
             }
         }
         function draw(e) {
-            if (!painting) return;
-            e.preventDefault();
+            if (!painting) return; e.preventDefault();
             const rect = canvas.getBoundingClientRect();
-            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-            const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left; const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
             ctx.lineWidth = document.getElementById('brush-size').value * (currentTool === 'eraser' ? 4 : 1);
             if(currentTool === 'brush') ctx.strokeStyle = document.getElementById('color-picker').value;
             ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
         }
-        canvas.addEventListener('mousedown', (e) => { painting = true; draw(e); });
-        canvas.addEventListener('mouseup', () => { painting = false; ctx.beginPath(); });
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('touchstart', (e) => { painting = true; draw(e); });
-        canvas.addEventListener('touchend', () => { painting = false; ctx.beginPath(); });
-        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('mousedown', (e) => { painting = true; draw(e); }); canvas.addEventListener('mouseup', () => { painting = false; ctx.beginPath(); });
+        canvas.addEventListener('mousemove', draw); canvas.addEventListener('touchstart', (e) => { painting = true; draw(e); });
+        canvas.addEventListener('touchend', () => { painting = false; ctx.beginPath(); }); canvas.addEventListener('touchmove', draw);
         function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
         // UI
         function setMode(mode) {
-            const textBox = document.getElementById('user-input');
-            const canvasBox = document.getElementById('canvas-container');
-            const tabT = document.getElementById('tab-text');
-            const tabD = document.getElementById('tab-draw');
+            const textBox = document.getElementById('user-input'); const canvasBox = document.getElementById('canvas-container');
+            const tabT = document.getElementById('tab-text'); const tabD = document.getElementById('tab-draw');
             if (mode === 'draw') {
-                isDrawing = true;
-                textBox.classList.add('hidden'); canvasBox.classList.remove('hidden');
+                isDrawing = true; textBox.classList.add('hidden'); canvasBox.classList.remove('hidden');
                 tabD.className = "px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 bg-slate-800 text-white shadow";
                 tabT.className = "px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 text-slate-500 hover:text-slate-300";
                 setTimeout(resizeCanvas, 50);
             } else {
-                isDrawing = false;
-                textBox.classList.remove('hidden'); canvasBox.classList.add('hidden');
+                isDrawing = false; textBox.classList.remove('hidden'); canvasBox.classList.add('hidden');
                 tabT.className = "px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 bg-slate-800 text-white shadow";
                 tabD.className = "px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 text-slate-500 hover:text-slate-300";
             }
         }
         function toggleImageMode() {
             isImageGen = !isImageGen;
-            const knob = document.getElementById('img-gen-knob');
-            const btn = document.getElementById('img-gen-btn');
-            const input = document.getElementById('user-input');
+            const knob = document.getElementById('img-gen-knob'); const btn = document.getElementById('img-gen-btn'); const input = document.getElementById('user-input');
             if (isImageGen) {
                 knob.style.transform = "translateX(16px)"; knob.classList.replace('bg-slate-400', 'bg-white');
                 btn.classList.replace('bg-slate-800', 'bg-purple-600'); btn.classList.replace('border-slate-700', 'border-purple-500');
@@ -462,19 +368,13 @@
             }
         }
         function fillPrompt(txt) { document.getElementById('user-input').value = txt; handleSend(); }
-        
         function setLoadState(active) {
-            const pill = document.getElementById('loading-pill');
-            const text = document.getElementById('loading-text');
-            const timeDisplay = document.getElementById('timer-display');
+            const pill = document.getElementById('loading-pill'); const text = document.getElementById('loading-text'); const timeDisplay = document.getElementById('timer-display');
             if (active) {
                 pill.classList.remove('hidden'); text.innerText = "Processing..."; startTime = Date.now();
-                clearInterval(timerInterval);
-                timerInterval = setInterval(() => {
-                    const elapsed = (Date.now() - startTime) / 1000;
-                    timeDisplay.innerText = elapsed.toFixed(1) + "s";
-                    if (elapsed > 2) text.innerText = "Thinking...";
-                    if (elapsed > 8) text.innerText = "Generating...";
+                clearInterval(timerInterval); timerInterval = setInterval(() => {
+                    const elapsed = (Date.now() - startTime) / 1000; timeDisplay.innerText = elapsed.toFixed(1) + "s";
+                    if (elapsed > 2) text.innerText = "Thinking..."; if (elapsed > 8) text.innerText = "Generating...";
                 }, 100);
             } else { pill.classList.add('hidden'); clearInterval(timerInterval); }
         }
@@ -501,12 +401,12 @@
                 clearCanvas();
             } else { addMessage('user', text); }
 
-            // Image Gen
+            // IMAGE GEN
             if (isImageGen || text.toLowerCase().startsWith("imagine")) {
                 activeBadge.innerText = "FLUX (HF)";
                 const hfKey = getKey('hf');
                 if(!hfKey) { 
-                    addMessage('assistant', "⚠️ Error: Missing Hugging Face API Key. Please paste a key starting with 'hf_' in the sidebar.");
+                    addMessage('assistant', "⚠️ Error: Missing Hugging Face API Key. Paste key starting with 'hf_' in sidebar.");
                     setLoadState(false); btn.disabled = false; return; 
                 }
                 try {
@@ -524,11 +424,11 @@
                 setLoadState(false); btn.disabled = false; return;
             }
 
-            // Routing
+            // ROUTING
             let selectedModel = document.getElementById('model-select').value;
             let provider = "GEMINI";
             if (selectedModel === 'auto') {
-                if (imgData) { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI (VISION)"; } // Switched to stable
+                if (imgData) { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI (VISION)"; }
                 else if (text.match(/solve|math|calculate|code|python|script|function|logic/i)) { selectedModel = 'groq-deepseek'; provider = "DEEPSEEK R1"; }
                 else { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI"; }
             } else {
@@ -553,12 +453,18 @@
                 } catch(e) {}
             }
 
+            // Construct Efficient Transcript History
+            let promptText = SYS_PROMPT + "\n\n";
             if (!text.match(/remember|previous|context/i)) chatHistory = [];
             chatHistory.push({ role: "user", content: webContext + (text || "Describe this image.") });
+            
+            chatHistory.forEach(msg => {
+                promptText += `${msg.role === 'user' ? 'User' : 'AI'}: ${msg.content}\n`;
+            });
 
-            // AbortController for Timeout (Prevents infinite hanging)
+            // ABORT CONTROLLER (30s Timeout)
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second limit
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
 
             try {
                 let reply = "";
@@ -566,18 +472,16 @@
                 if (selectedModel.includes('gemini')) {
                     const key = getKey('gemini');
                     if (!key) throw new Error("Missing Gemini Key (GE.txt or Manual).");
-                    const parts = [{ text: JSON.stringify(chatHistory) }];
+                    const parts = [{ text: promptText }];
                     if (imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${key}`, {
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ contents: [{ parts: parts }] }),
                         signal: controller.signal
                     });
                     const data = await res.json();
                     if(data.error) throw new Error(data.error.message);
                     reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if(!reply) throw new Error("No text response from Gemini.");
                 } 
                 // GROQ
                 else if (selectedModel.includes('groq')) {
@@ -585,8 +489,7 @@
                     if (!key) throw new Error("Missing Groq Key (GR.txt or Manual).");
                     if(imgData) throw new Error("Groq cannot see images. Switch to Gemini.");
                     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                        method: 'POST', 
-                        headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+                        method: 'POST', headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({ messages: [{role: "system", content: SYS_PROMPT}, ...chatHistory], model: selectedModel === 'groq-deepseek' ? 'deepseek-r1-distill-llama-70b' : 'llama-3.3-70b-versatile', temperature: 0.6 }),
                         signal: controller.signal
                     });
@@ -601,8 +504,7 @@
                     if(imgData) throw new Error("HF Chat cannot see images.");
                     const modelId = selectedModel === 'hf-qwen' ? "Qwen/Qwen2.5-Coder-32B-Instruct" : "mistralai/Mistral-7B-Instruct-v0.3";
                     const res = await fetch(`https://api-inference.huggingface.co/models/${modelId}/v1/chat/completions`, {
-                        method: "POST", 
-                        headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+                        method: "POST", headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
                         body: JSON.stringify({ messages: [{role: "system", content: SYS_PROMPT}, ...chatHistory], max_tokens: 1000 }),
                         signal: controller.signal
                     });
@@ -617,7 +519,14 @@
             } catch (err) {
                 clearTimeout(timeoutId);
                 let msg = err.message;
-                if (err.name === 'AbortError') msg = "Network Timeout. Please try again.";
+                // Auto-wipe bad user keys
+                if (msg.includes("401") || msg.includes("API key not valid")) {
+                    if (USER_KEYS.gemini || USER_KEYS.groq || USER_KEYS.hf) {
+                        clearUserKeys();
+                        msg += " (Bad User Key Auto-Removed. Try again to use System Key)";
+                    }
+                }
+                if (err.name === 'AbortError') msg = "Network Timeout (30s). Try again.";
                 addMessage('assistant', `⚠️ **Error:** ${msg}`);
             }
             setLoadState(false); btn.disabled = false;
