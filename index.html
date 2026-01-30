@@ -237,8 +237,7 @@
         let API_KEYS = { gemini: [], groq: [], hf: [] };
 
         // --- SMART DECODERS ---
-        
-        // 1. Hex Decode (Reverse -> Hex Decode)
+        // 1. Reverse + Hex Decode
         function decodeHex(hex) {
             try {
                 let str = '';
@@ -249,16 +248,7 @@
             } catch (e) { return null; }
         }
 
-        // 2. Base64 Decode (Base64 Decode -> Reverse -> Base64 Decode)
-        function decodeBase64(str) {
-            try {
-                let s1 = atob(str);
-                let s2 = s1.split("").reverse().join("");
-                return atob(s2);
-            } catch(e) { return null; }
-        }
-
-        // 3. Encoder (For UI Tool)
+        // 2. Encryption Tool
         function secureEncode(text) {
             let reversed = text.split("").reverse().join("");
             let hex = '';
@@ -273,7 +263,7 @@
             if(raw) document.getElementById('encoded-output').innerText = secureEncode(raw);
         }
 
-        // --- KEY LOADER ---
+        // --- KEY LOADER (ROBUST) ---
         async function loadKeys() {
             try {
                 const ts = new Date().getTime();
@@ -288,25 +278,18 @@
                     
                     let validKeys = [];
                     for(let line of lines) {
-                        // Strategy 1: Hex
+                        // 1. Try Hex Decoding
                         let k1 = decodeHex(line);
                         if(k1 && k1.startsWith(prefix)) { validKeys.push(k1); continue; }
                         
-                        // Strategy 2: Base64
-                        let k2 = decodeBase64(line);
-                        if(k2 && k2.startsWith(prefix)) { validKeys.push(k2); continue; }
-                        
-                        // Strategy 3: Plaintext (Fallback)
+                        // 2. Try Plaintext (Backup)
                         if(line.startsWith(prefix)) { validKeys.push(line); continue; }
                     }
                     return validKeys;
                 };
 
-                // Gemini keys start with AIza
                 API_KEYS.gemini = await processKeys(geminiRes, "AIza");
-                // Groq keys start with gsk_
                 API_KEYS.groq = await processKeys(groqRes, "gsk_");
-                // HF keys start with hf_
                 API_KEYS.hf = await processKeys(hfRes, "hf_");
 
                 updateKeyStatus('gemini', API_KEYS.gemini.length);
@@ -324,10 +307,7 @@
 
         function getKey(provider) {
             const keys = API_KEYS[provider];
-            if (!keys || keys.length === 0) {
-                // If it fails, try to return null so the specific API call handles the error message
-                return null; 
-            }
+            if (!keys || keys.length === 0) return null;
             return keys[Math.floor(Math.random() * keys.length)];
         }
 
@@ -485,9 +465,9 @@
             let selectedModel = document.getElementById('model-select').value;
             let provider = "GEMINI";
             if (selectedModel === 'auto') {
-                if (imgData) { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI (VISION)"; }
+                if (imgData) { selectedModel = 'gemini-1.5-flash-001'; provider = "GEMINI (VISION)"; } // Fixed Model Name
                 else if (text.match(/solve|math|calculate|code|python|script|function|logic/i)) { selectedModel = 'groq-deepseek'; provider = "DEEPSEEK R1"; }
-                else { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI"; }
+                else { selectedModel = 'gemini-1.5-flash-001'; provider = "GEMINI"; } // Fixed Model Name
             } else {
                 if (selectedModel.includes('groq')) provider = "GROQ";
                 else if (selectedModel.includes('hf')) provider = "MISTRAL/QWEN";
