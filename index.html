@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eric II: Neural Interface</title>
+    
+    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -27,14 +29,21 @@
 </head>
 <body class="bg-slate-950 text-slate-100 h-screen flex overflow-hidden font-sans antialiased selection:bg-indigo-500/30">
 
+    <!-- SIDEBAR -->
     <aside class="w-80 bg-slate-900 border-r border-slate-800 flex flex-col hidden md:flex z-30 shadow-2xl">
         <div class="p-6 border-b border-slate-800">
-            <h1 class="text-2xl font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent flex items-center gap-2 tracking-tight">Eric II</h1>
+            <h1 class="text-2xl font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent flex items-center gap-2 tracking-tight">
+                Eric II
+            </h1>
             <p class="text-[10px] text-slate-500 mt-1 font-mono uppercase tracking-widest">Multi-Agent System</p>
         </div>
+
         <div class="flex-1 overflow-y-auto p-4 space-y-8">
+            <!-- Model Selection -->
             <div class="space-y-2">
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2"><i data-lucide="cpu" class="w-3 h-3"></i> Intelligence Engine</label>
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="cpu" class="w-3 h-3"></i> Intelligence Engine
+                </label>
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-indigo-500 transition-colors cursor-pointer text-slate-200 shadow-sm">
                     <option value="auto" selected>✨ Auto-Select (Smartest)</option>
                     <optgroup label="Manual Override">
@@ -53,8 +62,13 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- Capabilities -->
             <div class="space-y-4">
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2"><i data-lucide="sliders-horizontal" class="w-3 h-3"></i> System</label>
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="sliders-horizontal" class="w-3 h-3"></i> System
+                </label>
+                
                 <div class="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg border border-slate-700/50">
                     <div class="flex items-center gap-3">
                         <div class="p-1.5 bg-cyan-500/10 rounded text-cyan-400"><i data-lucide="globe" class="w-4 h-4"></i></div>
@@ -62,6 +76,8 @@
                     </div>
                     <input type="checkbox" id="web-toggle" checked class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-indigo-500 focus:ring-0 cursor-pointer">
                 </div>
+                
+                <!-- Key Status Indicator -->
                 <div class="p-3 bg-slate-800/20 rounded-lg border border-slate-700/50">
                     <div class="flex items-center gap-2 mb-1">
                         <i data-lucide="server" class="w-3 h-3 text-emerald-400"></i>
@@ -73,12 +89,15 @@
                         <div class="flex justify-between text-[10px] text-slate-500"><span>HF (HU.txt):</span> <span id="status-hf" class="text-yellow-500">Loading...</span></div>
                     </div>
                 </div>
-                <!-- ENCODER TOOL (Secret) -->
+
+                <!-- Encoder Tool -->
                 <div class="pt-4 border-t border-slate-800">
-                    <button onclick="document.getElementById('encoder-tool').classList.toggle('hidden')" class="text-[10px] text-slate-600 hover:text-indigo-400 w-full text-left flex items-center gap-2"><i data-lucide="lock" class="w-3 h-3"></i> Key Encoder Tool</button>
+                    <button onclick="document.getElementById('encoder-tool').classList.toggle('hidden')" class="text-[10px] text-slate-600 hover:text-indigo-400 w-full text-left flex items-center gap-2">
+                        <i data-lucide="lock" class="w-3 h-3"></i> Key Encoder Tool
+                    </button>
                     <div id="encoder-tool" class="hidden mt-2 p-2 bg-slate-900 border border-slate-800 rounded">
                         <input type="text" id="raw-key-input" placeholder="Paste Plain Key Here" class="w-full bg-slate-950 border border-slate-800 text-[10px] p-1 text-white mb-1">
-                        <button onclick="encodeAndShow()" class="w-full bg-indigo-600 text-white text-[10px] py-1 rounded">Encrypt for .txt</button>
+                        <button onclick="encodeAndShow()" class="w-full bg-indigo-600 text-white text-[10px] py-1 rounded hover:bg-indigo-500 transition-colors">Encrypt</button>
                         <p id="encoded-output" class="text-[10px] text-green-400 mt-1 break-all select-all font-mono bg-slate-950 p-1 rounded min-h-[20px]"></p>
                     </div>
                 </div>
@@ -86,40 +105,97 @@
         </div>
     </aside>
 
+    <!-- MAIN INTERFACE -->
     <main class="flex-1 flex flex-col relative bg-slate-950">
+        
+        <!-- Mobile Header -->
         <header class="md:hidden h-14 bg-slate-900/90 backdrop-blur border-b border-slate-800 flex items-center justify-between px-4 z-20 sticky top-0">
             <span class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Eric II</span>
             <button onclick="document.querySelector('aside').classList.toggle('hidden')" class="text-slate-400"><i data-lucide="menu"></i></button>
         </header>
+
+        <!-- Chat History -->
         <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-60 scroll-smooth">
+            <!-- Welcome Screen -->
             <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center opacity-100 transition-opacity duration-500">
-                <div class="relative w-20 h-20 bg-slate-900 rounded-full flex items-center justify-center border border-slate-800 mb-6"><i data-lucide="brain-circuit" class="w-10 h-10 text-indigo-400"></i></div>
+                <div class="relative group mb-6">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+                    <div class="relative w-20 h-20 bg-slate-900 rounded-full flex items-center justify-center border border-slate-800">
+                        <i data-lucide="brain-circuit" class="w-10 h-10 text-indigo-400"></i>
+                    </div>
+                </div>
                 <h2 class="text-3xl font-bold text-white mb-2">Eric II</h2>
                 <p class="text-slate-400 max-w-sm text-sm mb-8">System Online. Connecting to secure repositories...</p>
+                
+                <div class="grid grid-cols-2 gap-3 w-full max-w-md">
+                    <button onclick="fillPrompt('Explain quantum physics')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-blue-400">Knowledge</p>
+                        <p class="text-xs text-slate-300">Explain Physics</p>
+                    </button>
+                    <button onclick="fillPrompt('Imagine a futuristic city')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-purple-400">Flux Art</p>
+                        <p class="text-xs text-slate-300">Generate Image</p>
+                    </button>
+                    <button onclick="fillPrompt('Solve: integral of x^2')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-orange-400">DeepSeek</p>
+                        <p class="text-xs text-slate-300">Solve Math</p>
+                    </button>
+                    <button onclick="fillPrompt('Write a python snake game')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-green-400">Coding</p>
+                        <p class="text-xs text-slate-300">Write Code</p>
+                    </button>
+                </div>
             </div>
         </div>
+
+        <!-- Floating Footer -->
         <div class="absolute bottom-0 left-0 right-0 z-40">
+            
+            <!-- Loading Indicator -->
             <div id="loading-pill" class="hidden absolute -top-14 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur border border-slate-700/50 text-slate-200 text-xs px-4 py-2 rounded-full shadow-xl flex items-center gap-3">
                 <div class="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                 <span id="loading-text">Processing...</span>
                 <span id="timer-display" class="font-mono text-indigo-400 text-[10px]">0.0s</span>
             </div>
+
+            <!-- Input Container -->
             <div class="p-4 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent">
                 <div class="max-w-4xl mx-auto glass rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 transition-all duration-300" id="input-box">
+                    
+                    <!-- Toolbar -->
                     <div class="h-11 bg-slate-900/50 border-b border-white/5 flex items-center justify-between px-3">
                         <div class="flex items-center bg-slate-950/50 rounded-lg p-1 border border-white/5">
-                            <button onclick="setMode('text')" id="tab-text" class="px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 bg-slate-800 text-white shadow"><i data-lucide="type" class="w-3 h-3"></i> Text</button>
-                            <button onclick="setMode('draw')" id="tab-draw" class="px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 text-slate-500 hover:text-slate-300"><i data-lucide="pencil" class="w-3 h-3"></i> Draw</button>
+                            <button onclick="setMode('text')" id="tab-text" class="px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 bg-slate-800 text-white shadow">
+                                <i data-lucide="type" class="w-3 h-3"></i> Text
+                            </button>
+                            <button onclick="setMode('draw')" id="tab-draw" class="px-3 py-1 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 text-slate-500 hover:text-slate-300">
+                                <i data-lucide="pencil" class="w-3 h-3"></i> Draw
+                            </button>
                         </div>
+                        
+                        <!-- Gen Switch -->
                         <div class="flex items-center gap-2 pl-3 border-l border-white/5">
                             <span class="text-[10px] font-bold text-slate-500 uppercase">Create Image</span>
-                            <button onclick="toggleImageMode()" id="img-gen-btn" class="w-8 h-4 rounded-full bg-slate-800 relative transition-colors border border-slate-700"><div class="w-2 h-2 bg-slate-400 rounded-full absolute top-1 left-1 transition-transform shadow-sm" id="img-gen-knob"></div></button>
+                            <button onclick="toggleImageMode()" id="img-gen-btn" class="w-8 h-4 rounded-full bg-slate-800 relative transition-colors border border-slate-700">
+                                <div class="w-2 h-2 bg-slate-400 rounded-full absolute top-1 left-1 transition-transform shadow-sm" id="img-gen-knob"></div>
+                            </button>
                         </div>
                     </div>
+
+                    <!-- Content Area -->
                     <div class="p-3 relative bg-slate-900/30">
-                        <textarea id="user-input" rows="1" class="w-full bg-transparent border-none outline-none text-slate-200 placeholder-slate-600 resize-none px-2 py-1 max-h-48 text-sm leading-relaxed" placeholder="Type a message..." oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); handleSend();}"></textarea>
+                        <!-- Text Mode -->
+                        <textarea id="user-input" rows="1" 
+                            class="w-full bg-transparent border-none outline-none text-slate-200 placeholder-slate-600 resize-none px-2 py-1 max-h-48 text-sm leading-relaxed" 
+                            placeholder="Type a message..."
+                            oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"
+                            onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); handleSend();}"></textarea>
+                        
+                        <!-- Drawing Mode -->
                         <div id="canvas-container" class="hidden h-72 w-full relative rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
                             <canvas id="drawing-canvas" class="w-full h-full"></canvas>
+                            
+                            <!-- Tools -->
                             <div class="absolute top-3 left-3 flex flex-col gap-2 bg-slate-900/90 p-2 rounded-lg backdrop-blur border border-slate-800 shadow-xl">
                                 <button onclick="setTool('brush')" id="tool-brush" class="p-2 rounded tool-active"><i data-lucide="paintbrush" class="w-4 h-4"></i></button>
                                 <button onclick="setTool('eraser')" id="tool-eraser" class="p-2 rounded text-slate-500 hover:bg-slate-800"><i data-lucide="eraser" class="w-4 h-4"></i></button>
@@ -127,15 +203,31 @@
                                 <input type="color" id="color-picker" value="#ffffff" class="w-6 h-6 rounded bg-transparent border-none cursor-pointer">
                                 <input type="range" id="brush-size" min="1" max="20" value="3" class="w-6 h-20 writing-mode-vertical appearance-none bg-slate-800 rounded-full overflow-hidden [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-full [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:bg-indigo-500">
                             </div>
-                            <button onclick="clearCanvas()" class="absolute top-3 right-3 p-2 bg-slate-900/90 rounded-lg text-red-400 hover:bg-red-500/20 border border-slate-800 transition-colors" title="Clear"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+
+                            <button onclick="clearCanvas()" class="absolute top-3 right-3 p-2 bg-slate-900/90 rounded-lg text-red-400 hover:bg-red-500/20 border border-slate-800 transition-colors" title="Clear">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
                         </div>
                     </div>
+
+                    <!-- Footer Bar -->
                     <div class="h-10 flex justify-between items-center px-3 bg-slate-900/30 border-t border-white/5">
-                        <div class="text-[10px] text-slate-600 font-mono flex items-center gap-2"><span id="active-model-display" class="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">AUTO-ROUTING</span><span class="hidden md:inline">|</span><span class="hidden md:inline">History: Auto-Clear</span></div>
-                        <button id="send-btn" onclick="handleSend()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-all shadow-lg shadow-indigo-900/20 active:scale-95 flex items-center gap-2">SEND <i data-lucide="arrow-up" class="w-3 h-3"></i></button>
+                        <div class="text-[10px] text-slate-600 font-mono flex items-center gap-2">
+                             <span id="active-model-display" class="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">AUTO-ROUTING</span>
+                             <span class="hidden md:inline">|</span>
+                             <span class="hidden md:inline">History: Auto-Clear</span>
+                        </div>
+                        <button id="send-btn" onclick="handleSend()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-all shadow-lg shadow-indigo-900/20 active:scale-95 flex items-center gap-2">
+                            SEND <i data-lucide="arrow-up" class="w-3 h-3"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex justify-center gap-4"><span>Powered by Gemini • HuggingFace • Groq</span><span>© Eric</span><span>From Willetton SHS</span></div>
+                
+                <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex justify-center gap-4">
+                    <span>Powered by Gemini • HuggingFace • Groq</span>
+                    <span>© Eric</span>
+                    <span>From Willetton SHS</span>
+                </div>
             </div>
         </div>
     </main>
@@ -144,14 +236,13 @@
         let API_KEYS = { gemini: [], groq: [], hf: [] };
 
         // --- NEW ENCRYPTION LOGIC (HEX + REVERSE) ---
-        // 1. Reverse String
-        // 2. Convert to Hex
-        // Result: 0-9, a-f only. Impossible to break in browser.
+        // Result: 0-9, a-f only. Impossible to break in browser unless you know the algo.
         function secureEncode(text) {
             let reversed = text.split("").reverse().join("");
             let hex = '';
             for(let i=0;i<reversed.length;i++) {
-                hex += ''+reversed.charCodeAt(i).toString(16);
+                // Encode to hex and ensure 2 digits
+                hex += reversed.charCodeAt(i).toString(16).padStart(2, '0');
             }
             return hex;
         }
@@ -174,7 +265,7 @@
 
         async function loadKeys() {
             try {
-                // Fetch with cache-busting to prevent stale 404s
+                // Fetch with cache-busting
                 const ts = new Date().getTime();
                 const [geminiRes, groqRes, hfRes] = await Promise.all([
                     fetch(`GE.txt?t=${ts}`), fetch(`GR.txt?t=${ts}`), fetch(`HU.txt?t=${ts}`)
@@ -206,7 +297,6 @@
         function getKey(provider) {
             const keys = API_KEYS[provider];
             if (!keys || keys.length === 0) {
-                alert(`⚠️ Error: Could not load keys for ${provider.toUpperCase()}. Check .txt files.`);
                 return null;
             }
             return keys[Math.floor(Math.random() * keys.length)];
@@ -220,7 +310,7 @@
         let currentTool = 'brush';
         const SYS_PROMPT = "You are Eric II. You are an advanced AI assistant. You can see drawings sent by the user. Be concise, helpful, and accurate. Use Markdown. For math, use LaTeX ($$).";
 
-        // Canvas
+        // Canvas Logic (Standard)
         const canvas = document.getElementById('drawing-canvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         let painting = false;
@@ -267,7 +357,7 @@
         canvas.addEventListener('touchmove', draw);
         function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
-        // UI
+        // UI Modes
         function setMode(mode) {
             const textBox = document.getElementById('user-input');
             const canvasBox = document.getElementById('canvas-container');
@@ -324,6 +414,8 @@
             const text = input.value.trim();
             const btn = document.getElementById('send-btn');
             const activeBadge = document.getElementById('active-model-display');
+            
+            // Check Canvas
             let imgData = null;
             if (isDrawing) {
                 const temp = document.createElement('canvas'); temp.width = canvas.width; temp.height = canvas.height;
@@ -334,32 +426,36 @@
             document.getElementById('welcome-screen').style.display = 'none';
             input.value = ''; btn.disabled = true; setLoadState(true);
 
+            // Display User Message
             if (imgData) {
                 addMessage('user', `<img src="data:image/jpeg;base64,${imgData}" class="max-w-[200px] rounded border border-indigo-400 mb-2 bg-white block"> ${text || "Analyze this."}`);
                 clearCanvas();
             } else { addMessage('user', text); }
 
-            // Image Gen
+            // IMAGE GEN
             if (isImageGen || text.toLowerCase().startsWith("imagine")) {
                 activeBadge.innerText = "FLUX (HF)";
                 const hfKey = getKey('hf');
-                if(!hfKey) { setLoadState(false); btn.disabled = false; return; }
+                if(!hfKey) { 
+                    addMessage('assistant', "⚠️ Error: Missing Hugging Face API Key. Check HU.txt.");
+                    setLoadState(false); btn.disabled = false; return; 
+                }
                 try {
                     const res = await fetch("https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-dev", {
                         method: "POST", headers: { "Authorization": `Bearer ${hfKey}`, "Content-Type": "application/json" },
                         body: JSON.stringify({ inputs: text })
                     });
-                    if (!res.ok) throw new Error("Busy/Error");
+                    if (!res.ok) throw new Error(`Flux Error: ${res.status}`);
                     const blob = await res.blob();
                     const url = URL.createObjectURL(blob);
                     const div = document.createElement('div'); div.className = "msg-enter flex justify-start w-full";
                     div.innerHTML = `<div class="bg-slate-800 border border-slate-700 p-2 rounded-2xl rounded-tl-none shadow-lg max-w-sm"><img src="${url}" class="rounded-lg w-full"></div>`;
                     document.getElementById('chat-container').appendChild(div);
-                } catch (e) { addMessage('assistant', `❌ Image Gen Failed`); }
+                } catch (e) { addMessage('assistant', `❌ Image Gen Failed: ${e.message}`); }
                 setLoadState(false); btn.disabled = false; return;
             }
 
-            // Routing
+            // ROUTING
             let selectedModel = document.getElementById('model-select').value;
             let provider = "GEMINI";
             if (selectedModel === 'auto') {
@@ -393,52 +489,59 @@
 
             try {
                 let reply = "";
+                // GEMINI
                 if (selectedModel.includes('gemini')) {
                     const key = getKey('gemini');
-                    if(key) {
-                        const parts = [{ text: JSON.stringify(chatHistory) }];
-                        if (imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
-                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${key}`, {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ contents: [{ parts: parts }] })
-                        });
-                        const data = await res.json();
-                        reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error: No response";
-                    }
-                } else if (selectedModel.includes('groq')) {
+                    if (!key) throw new Error("Missing Gemini Key (GE.txt)");
+                    const parts = [{ text: JSON.stringify(chatHistory) }];
+                    if (imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${key}`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: parts }] })
+                    });
+                    const data = await res.json();
+                    if(data.error) throw new Error(data.error.message);
+                    reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if(!reply) throw new Error("No text response from Gemini.");
+                } 
+                // GROQ
+                else if (selectedModel.includes('groq')) {
                     const key = getKey('groq');
-                    if(key) {
-                        if(imgData) throw new Error("Switch to Gemini for Vision.");
-                        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                            method: 'POST', headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ messages: [{role: "system", content: SYS_PROMPT}, ...chatHistory], model: selectedModel === 'groq-deepseek' ? 'deepseek-r1-distill-llama-70b' : 'llama-3.3-70b-versatile', temperature: 0.6 })
-                        });
-                        const data = await res.json();
-                        reply = data.choices?.[0]?.message?.content || "Error: No response";
-                    }
-                } else if (selectedModel.includes('hf')) {
+                    if (!key) throw new Error("Missing Groq Key (GR.txt)");
+                    if(imgData) throw new Error("Groq cannot see images. Switch to Gemini.");
+                    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST', headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ messages: [{role: "system", content: SYS_PROMPT}, ...chatHistory], model: selectedModel === 'groq-deepseek' ? 'deepseek-r1-distill-llama-70b' : 'llama-3.3-70b-versatile', temperature: 0.6 })
+                    });
+                    const data = await res.json();
+                    if(data.error) throw new Error(data.error.message);
+                    reply = data.choices?.[0]?.message?.content;
+                } 
+                // HF
+                else if (selectedModel.includes('hf')) {
                     const key = getKey('hf');
-                    if(key) {
-                        if(imgData) throw new Error("Switch to Gemini for Vision.");
-                        const modelId = selectedModel === 'hf-qwen' ? "Qwen/Qwen2.5-Coder-32B-Instruct" : "mistralai/Mistral-7B-Instruct-v0.3";
-                        const res = await fetch(`https://api-inference.huggingface.co/models/${modelId}/v1/chat/completions`, {
-                            method: "POST", headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-                            body: JSON.stringify({ messages: [{role: "system", content: SYS_PROMPT}, ...chatHistory], max_tokens: 1000 })
-                        });
-                        const data = await res.json();
-                        reply = data.choices?.[0]?.message?.content || "Error: No response";
-                    }
+                    if (!key) throw new Error("Missing HF Key (HU.txt)");
+                    if(imgData) throw new Error("HF Chat cannot see images.");
+                    const modelId = selectedModel === 'hf-qwen' ? "Qwen/Qwen2.5-Coder-32B-Instruct" : "mistralai/Mistral-7B-Instruct-v0.3";
+                    const res = await fetch(`https://api-inference.huggingface.co/models/${modelId}/v1/chat/completions`, {
+                        method: "POST", headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({ messages: [{role: "system", content: SYS_PROMPT}, ...chatHistory], max_tokens: 1000 })
+                    });
+                    const data = await res.json();
+                    if(data.error) throw new Error(data.error);
+                    reply = data.choices?.[0]?.message?.content;
                 }
+                
                 chatHistory.push({ role: "assistant", content: reply });
                 addMessage('assistant', reply);
-            } catch (err) { addMessage('assistant', `⚠️ **System Error:** ${err.message}`); }
+            } catch (err) { addMessage('assistant', `⚠️ **Error:** ${err.message}`); }
             setLoadState(false); btn.disabled = false;
         }
 
         function addMessage(role, text) {
             const div = document.createElement('div');
             div.className = `msg-enter flex ${role==='user'?'justify-end':'justify-start'} w-full`;
-            let content = text;
+            let content = text || "Error: Empty response";
             if (role === 'assistant') {
                 content = content.replace(/<think>([\s\S]*?)<\/think>/g, '<div class="mb-2 p-2 bg-indigo-900/30 border-l-2 border-indigo-400 text-indigo-300 text-xs font-mono rounded-r">$1</div>');
                 content = marked.parse(content);
