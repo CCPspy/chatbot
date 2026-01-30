@@ -47,8 +47,8 @@
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-indigo-500 transition-colors cursor-pointer text-slate-200 shadow-sm">
                     <option value="auto" selected>✨ Auto-Select (Smartest)</option>
                     <optgroup label="Manual Override">
-                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Newest/Best)</option>
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Standard)</option>
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Reliable)</option>
+                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental)</option>
                         <option value="groq-deepseek">DeepSeek R1 (Math/Logic)</option>
                         <option value="groq-llama">Llama 3 (General)</option>
                     </optgroup>
@@ -237,7 +237,6 @@
         let API_KEYS = { gemini: [], groq: [], hf: [] };
 
         // --- SMART DECODERS ---
-        // 1. Reverse + Hex Decode
         function decodeHex(hex) {
             try {
                 let str = '';
@@ -248,7 +247,6 @@
             } catch (e) { return null; }
         }
 
-        // 2. Encryption Tool
         function secureEncode(text) {
             let reversed = text.split("").reverse().join("");
             let hex = '';
@@ -266,9 +264,11 @@
         // --- KEY LOADER (ROBUST) ---
         async function loadKeys() {
             try {
-                const ts = new Date().getTime();
+                const ts = new Date().getTime(); // Cache busting
                 const [geminiRes, groqRes, hfRes] = await Promise.all([
-                    fetch(`GE.txt?t=${ts}`), fetch(`GR.txt?t=${ts}`), fetch(`HU.txt?t=${ts}`)
+                    fetch(`GE.txt?v=${ts}`, { cache: "no-store" }), 
+                    fetch(`GR.txt?v=${ts}`, { cache: "no-store" }), 
+                    fetch(`HU.txt?v=${ts}`, { cache: "no-store" })
                 ]);
 
                 const processKeys = async (res, prefix) => {
@@ -278,12 +278,18 @@
                     
                     let validKeys = [];
                     for(let line of lines) {
-                        // 1. Try Hex Decoding
+                        // 1. Check if it is ALREADY a valid plain text key (Fallback)
+                        if (line.startsWith(prefix)) { 
+                            validKeys.push(line); 
+                            continue; 
+                        }
+
+                        // 2. Try Hex Decoding
                         let k1 = decodeHex(line);
-                        if(k1 && k1.startsWith(prefix)) { validKeys.push(k1); continue; }
-                        
-                        // 2. Try Plaintext (Backup)
-                        if(line.startsWith(prefix)) { validKeys.push(line); continue; }
+                        if(k1 && k1.startsWith(prefix)) { 
+                            validKeys.push(k1); 
+                            continue; 
+                        }
                     }
                     return validKeys;
                 };
@@ -465,9 +471,9 @@
             let selectedModel = document.getElementById('model-select').value;
             let provider = "GEMINI";
             if (selectedModel === 'auto') {
-                if (imgData) { selectedModel = 'gemini-2.0-flash-exp'; provider = "GEMINI (VISION)"; } // Updated to 2.0 Flash Exp
+                if (imgData) { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI (VISION)"; } // Fixed model name
                 else if (text.match(/solve|math|calculate|code|python|script|function|logic/i)) { selectedModel = 'groq-deepseek'; provider = "DEEPSEEK R1"; }
-                else { selectedModel = 'gemini-2.0-flash-exp'; provider = "GEMINI"; } // Updated to 2.0 Flash Exp
+                else { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI"; } // Fixed model name
             } else {
                 if (selectedModel.includes('groq')) provider = "GROQ";
                 else if (selectedModel.includes('hf')) provider = "MISTRAL/QWEN";
