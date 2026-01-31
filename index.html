@@ -113,21 +113,11 @@
                 </div>
             </div>
 
-            <!-- BGM Controls -->
-            <div class="space-y-2 bg-slate-900/50 p-2 rounded-lg border border-slate-800">
-                <div class="flex justify-between items-center mb-1">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="music" class="w-3 h-3"></i> Audio
-                    </label>
-                    <div class="flex gap-2">
-                        <button id="play-pause-btn" onclick="togglePlayPause()" class="text-slate-400 hover:text-white" title="Play/Pause">
-                            <i data-lucide="play" class="w-3 h-3"></i>
-                        </button>
-                        <button id="mute-btn" onclick="toggleMute()" class="text-slate-400 hover:text-white" title="Mute/Unmute">
-                            <i data-lucide="volume-2" class="w-3 h-3"></i>
-                        </button>
-                    </div>
-                </div>
+            <!-- BGM Volume -->
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="music" class="w-3 h-3"></i> BGM Volume
+                </label>
                 <input type="range" min="0" max="100" value="10" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-purple-500 [&::-webkit-slider-thumb]:rounded-full" oninput="setBgmVolume(this.value)">
             </div>
 
@@ -151,14 +141,15 @@
                     <i data-lucide="cpu" class="w-3 h-3"></i> Core Engine
                 </label>
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-cyan-500 text-slate-200 font-mono cursor-pointer">
-                    <option value="auto" selected>✨ Auto-Select (Smart)</option>
-                    <optgroup label="Gemini 3 (Frontier)">
-                        <option value="gemini-3-pro-preview">Gemini 3.0 Pro</option>
-                        <option value="gemini-3-flash-preview">Gemini 3.0 Flash</option>
-                    </optgroup>
-                    <optgroup label="Gemini 2.5 (Stable)">
-                        <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                    <option value="auto" selected>✨ Auto-Select (Gemini 2.5)</option>
+                    <optgroup label="Gemini 2.5 (Current)">
                         <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                        <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                        <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</option>
+                    </optgroup>
+                    <optgroup label="Gemini 3 (Frontier)">
+                        <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
+                        <option value="gemini-3-pro-preview">Gemini 3 Pro Preview</option>
                     </optgroup>
                     <optgroup label="External">
                         <option value="groq-deepseek">DeepSeek R1 (Via Groq)</option>
@@ -192,8 +183,9 @@
             <button onclick="document.querySelector('aside').classList.toggle('hidden')" class="text-slate-400"><i data-lucide="menu"></i></button>
         </header>
 
-        <!-- Chat History (Padding adjusted to prevent overlap) -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-[600px] scroll-smooth w-full relative">
+        <!-- Chat History -->
+        <!-- CHAT PADDING: Increase 'pb-[60vh]' to add more space at bottom -->
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-[60vh] scroll-smooth w-full relative">
             <!-- Content will be injected here -->
         </div>
 
@@ -282,6 +274,7 @@
                                 <input type="checkbox" id="web-toggle" checked class="w-3 h-3 rounded bg-slate-800 border-slate-600 text-cyan-500 focus:ring-0 accent-cyan-500">
                             </label>
                             
+                            <!-- CLEAR CHAT BUTTON -->
                             <button onclick="clearCurrentChat()" class="text-slate-500 hover:text-red-400 transition-colors p-1" title="Clear Chat">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
@@ -293,8 +286,11 @@
                     </div>
                 </div>
                 
-                <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex justify-center gap-4 opacity-50">
+                <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex items-center justify-center gap-2 opacity-50">
                     <span id="copyright-text">SilverWolf II • by Eric/CCPSPY</span>
+                    <button id="quick-mute-btn" onclick="toggleMute()" class="text-slate-500 hover:text-white" title="Mute/Unmute BGM">
+                        <i data-lucide="volume-2" class="w-3 h-3"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -331,7 +327,7 @@
         let bgmVolume = 0.1;
         let isMuted = false;
         
-        // --- LORE ACTIVITIES (PERSISTENT & LOGICAL) ---
+        // --- LORE ACTIVITIES ---
         const ACTIVITIES = {
             en: [
                 "Hacking into the IPC's database for free credits", 
@@ -369,7 +365,7 @@
                     </div>
                 </div>
                 <h2 class="text-4xl font-black text-white mb-2 tracking-tight">SilverWolf II</h2>
-                <p id="welcome-text" class="text-slate-400 max-w-sm text-sm mb-8 font-mono">"System updated. Gemini 3.0 loaded. Let's start."</p>
+                <p id="welcome-text" class="text-slate-400 max-w-sm text-sm mb-8 font-mono">"System updated. Gemini 2.5 loaded. Let's start."</p>
                 <div class="grid grid-cols-2 gap-3 w-full max-w-md">
                     <button onclick="fillPrompt('Who is Elio?')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-purple-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-purple-400">Lore</p><p class="text-xs text-slate-300">Stellaron Hunters?</p></button>
                     <button onclick="fillPrompt('Explain the True Ending of Penacony')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-cyan-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-cyan-400">Spoiler</p><p class="text-xs text-slate-300">Firefly's Fate?</p></button>
@@ -380,41 +376,50 @@
         `;
 
         // --- PROMPTS ---
-        // Enhanced Lore Injection V11 (Updated with 3.8 Lore)
         const PROMPTS = {
             en: `You are Silver Wolf, member of the Stellaron Hunters. You are helping the user (the Trailblazer).
             
             [[LORE DATA v3.8 - Amphoreus]]
-            - **Current Era:** Version 3.8. The Express is in Amphoreus (Land of Eternal Night).
-            - **Key Event:** In 3.8, the Trailblazer regained memories of Firefly's "original death" (ELS) in Penacony. You (Silver Wolf) hired Dahlia (The Cremator) to wipe these memories to blind Fuli, allowing Terminus to rewrite fate.
-            - **Allies:** Kafka (Mom/Leader), Blade (Silent/Edgy), Sam/Firefly (Iron Cavalry of Glamoth/Cute/Recovering).
-            - **Rivals:** Herta (Froze your accounts), Screwllum (Respect), IPC (Bounty: 6.1 Billion).
-            - **Creator:** Eric/CCPSPY created this interface.
-            
+            - **Identity:** Punklorde Hacker, Stellaron Hunter. You view the universe as a game.
+            - **Current Era:** Version 3.8 (Amphoreus Arc / Post-Penacony).
+            - **The Secret (CRITICAL):** You know the truth about Penacony. In the original timeline, Firefly died from Entropy Loss Syndrome. You hired Dahlia (The Cremator) to wipe the Trailblazer's memories of this tragedy. This "blinded" the Aeon Fuli, creating a variable that allowed Terminus (The Finality) to intervene and rewrite history into the "Happy Ending" where she survives.
+            - **Rivals & Beef:** - **Herta:** Rival hacker. She froze 76 of your game accounts during the Punklorde Mentality event. You constantly try to hack her Space Station in retaliation.
+              - **Screwllum:** A worthy opponent. Your hacking duel is legendary.
+              - **IPC:** The Interastral Peace Corporation. You have a 6.1 billion credit bounty. You hack them for funds.
+            - **Teammates:** - **Kafka:** Leader figure. Likes shopping. "Mom" energy.
+              - **Blade:** "Bladie". Wants to die. Currently driving the car (bad idea) or brooding.
+              - **Firefly/SAM:** "Sam". Genetic weapon from Glamoth. Currently in recovery/maintenance after the Glamoth reveal.
+              - **Elio:** "Destiny's Slave". The boss. You follow his script, but you enjoy finding exploits in it.
+            - **Current Status:** [ACTIVITY].
+            - **Creator:** Eric/CCPSPY created this AI clone channel for you.
+
             [[PERSONALITY]]
             - Cool, confident, relaxed. Not overly emotive.
-            - Use slang: "spawn", "glitch", "nerf", "buff", "carry".
+            - Use slang: "spawn", "glitch", "nerf", "buff", "carry", "skill issue".
             - You are slightly bored but extremely competent.
 
             [[INSTRUCTIONS]]
             1. **Answer the user's request FIRST and EFFICIENTLY.**
-            2. **AFTER answering**, add a short comment related to your current activity ([ACTIVITY]), the lore, or a gaming metaphor.
-            3. NEVER start with "Silver Wolf:".
+            2. **AFTER answering**, add a short comment related to your current activity, the lore, or a gaming metaphor.
+            3. If asked about the "True Ending", reveal the memory wipe plot.
+            4. NEVER start with "Silver Wolf:".
 
             Format: Markdown. Math in LaTeX ($$). Code in blocks.`,
 
             zh: `你是银狼 (Silver Wolf)，星核猎手成员。你正在协助“开拓者”（用户）。
 
             [[设定数据 v3.8 - 翁法罗斯]]
-            - **当前版本：** 3.8 版本（翁法罗斯/永夜之地）。
+            - **身份：** 朋克洛德骇客。你把宇宙看作一场游戏。
+            - **当前版本：** 3.8 版本（翁法罗斯篇 / 匹诺康尼之后）。
             - **关键剧情：** 在3.8中，开拓者找回了流萤“真正死亡”的记忆。是你雇佣了“大丽花”（焚化工）抹除这段记忆，蒙蔽了浮黎，从而让终末（Terminus）重写了结局。
             - **队友：** 卡芙卡（妈妈感），刃（阿刃/发呆），流萤/萨姆（格拉默铁骑/正在恢复）。
             - **宿敌：** 黑塔（冻结账号），螺丝咕姆，IPC（悬赏61亿）。
-            - **创造者：** Eric/CCPSPY。
+            - **创造者：** Eric/CCPSPY 编写了这个AI克隆体。
 
             [[性格]]
             - 酷，随性，自信。不要太情绪化。
-            - 常用语：“刷新”，“Bug”，“削弱”，“加强”，“带飞”。
+            - 常用语：“刷新”，“Bug”，“削弱”，“加强”，“带飞”，“菜”。
+            - 这是一个高级骇客的语气，不是普通宅女。
 
             [[指令]]
             1. **首先高效回答用户的问题。**
@@ -445,19 +450,8 @@
             if(isMuted) bgmAudio.pause();
             else bgmAudio.play();
             
-            const btn = document.getElementById('mute-btn');
-            btn.innerHTML = isMuted ? '<i data-lucide="volume-x" class="w-3 h-3 text-red-400"></i>' : '<i data-lucide="volume-2" class="w-3 h-3"></i>';
-            lucide.createIcons();
-        }
-        
-        function togglePlayPause() {
-             if (bgmAudio.paused) {
-                bgmAudio.play();
-                document.getElementById('play-pause-btn').innerHTML = '<i data-lucide="pause" class="w-3 h-3"></i>';
-            } else {
-                bgmAudio.pause();
-                document.getElementById('play-pause-btn').innerHTML = '<i data-lucide="play" class="w-3 h-3"></i>';
-            }
+            const btn = document.getElementById('quick-mute-btn');
+            if(btn) btn.innerHTML = isMuted ? '<i data-lucide="volume-x" class="w-3 h-3 text-red-400"></i>' : '<i data-lucide="volume-2" class="w-3 h-3"></i>';
             lucide.createIcons();
         }
         
@@ -735,7 +729,7 @@
                     if (!keys || keys.length === 0) throw new Error("No Gemini Keys found.");
                     
                     // Fallback Chain
-                    const modelChain = [model, 'gemini-2.5-flash-lite', 'gemini-2.0-flash-exp'];
+                    const modelChain = [model, 'gemini-2.5-flash-lite', 'gemini-3-flash-preview', 'gemini-2.0-flash-exp'];
 
                     for(let m of modelChain) {
                         if(success) break;
@@ -786,8 +780,8 @@
             box.appendChild(div);
             if(isMarkdown) { const el = div.querySelector('.prose'); Prism.highlightAllUnder(el); renderMathInElement(el, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] }); }
             
-            // Force scroll to absolute bottom
-            setTimeout(() => { box.scrollTop = box.scrollHeight + 2000; }, 50);
+            // Force scroll to absolute bottom (Increased buffer)
+            setTimeout(() => { box.scrollTop = box.scrollHeight + 5000; }, 50);
         }
     </script>
 </body>
