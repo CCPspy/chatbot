@@ -66,7 +66,7 @@
             <h1 class="text-2xl font-black bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent flex items-center gap-2 tracking-tight">
                 <span id="ui-title">SilverWolf II</span>
             </h1>
-            <p id="ui-subtitle" class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Code V5.2</p>
+            <p id="ui-subtitle" class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Code V6.0</p>
         </div>
 
         <!-- TABS -->
@@ -126,8 +126,7 @@
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-cyan-500 text-slate-200 font-mono cursor-pointer">
                     <option value="auto" selected>✨ Auto-Select (Recommended)</option>
                     <optgroup label="Gemini (Google)">
-                        <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                        <option value="gemini-3.0-flash-preview">Gemini 3.0 Flash</option>
+                        <option value="gemini-2.0-flash-exp">Gemini 2.5 Flash</option>
                     </optgroup>
                     <optgroup label="DeepSeek & Llama">
                         <option value="groq-deepseek">DeepSeek R1 (Via Groq)</option>
@@ -162,7 +161,7 @@
         </header>
 
         <!-- Chat History -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-80 scroll-smooth w-full relative">
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-[30vh] scroll-smooth w-full relative">
             <!-- Content will be injected here -->
         </div>
 
@@ -210,7 +209,7 @@
                             oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"
                             onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); handleSend();}"></textarea>
                         
-                        <!-- Drawing Mode -->
+                        <!-- Drawing Mode (Revised) -->
                         <div id="canvas-wrapper" class="hidden flex-col h-72 w-full border border-slate-700/50 bg-slate-950 rounded-lg overflow-hidden transition-all duration-300">
                              <!-- Whiteboard Toolbar -->
                              <div class="h-10 bg-slate-900 border-b border-slate-800 flex items-center px-2 justify-between toolbar">
@@ -291,26 +290,26 @@
         // --- TRANSLATION DATA ---
         const UI_TEXT = {
             en: {
-                title: "SilverWolf II", subtitle: "Protocol: Ether Code V5.2",
+                title: "SilverWolf II", subtitle: "Protocol: Ether Code V6.0",
                 tabHistory: "SESSIONS", tabSettings: "SYSTEM",
                 newGame: "NEW GAME", langLabel: "Audio Protocol (Language)",
                 keysLabel: "Manual Override", modelLabel: "Core Engine",
                 statusLabel: "Link Status", reset: "Purge",
                 btnChat: "Chat", btnDraw: "Draw", genLabel: "Flux Gen",
                 web: "WEB", send: "EXECUTE",
-                welcome: "“System updated. Gemini 2.5 loaded. Let's start.”",
+                welcome: "“System online. Gemini 2.5 loaded. Let's start.”",
                 ph: "Enter command...", phImg: "Describe asset to render...",
                 footerL: "Gemini 2.5 • DeepSeek R1 • Flux", footerR: "Willetton SHS"
             },
             zh: {
-                title: "银狼 II", subtitle: "协议：以太编码 V5.2",
+                title: "银狼 II", subtitle: "协议：以太编码 V6.0",
                 tabHistory: "会话记录", tabSettings: "系统设置",
                 newGame: "新游戏", langLabel: "语言协议 (Language)",
                 keysLabel: "手动密钥", modelLabel: "核心引擎",
                 statusLabel: "链路状态", reset: "重置",
                 btnChat: "聊天", btnDraw: "绘图", genLabel: "图像生成",
                 web: "联网", send: "执行",
-                welcome: "“系统升级完毕。Gemini 2.5 引擎就绪。游戏开始。”",
+                welcome: "“系统上线。Gemini 2.5 引擎就绪。游戏开始。”",
                 ph: "输入指令...", phImg: "描述要渲染的图像...",
                 footerL: "Gemini 2.5 • DeepSeek R1 • Flux", footerR: "Willetton Senior High School"
             }
@@ -318,19 +317,19 @@
 
         // --- PROMPTS ---
         const PROMPTS = {
-            en: `You are an AI clone of Silver Wolf from Honkai: Star Rail, co-created by the original Silver Wolf and Eric.
-            Backstory: Legendary hacker from Punklorde. Universe is a game.
-            Personality: Casual, cool, slightly bored but competent. Use gaming terms (AFK, spawn, grind, daily quest).
-            Constraints: No "Silver Wolf:" prefix. Not repetitive.
-            Task: Assist the user.
+            en: `You are Silver Wolf, a specialized AI assistant co-created by the original Silver Wolf and Eric.
+            Backstory: An AI clone designed to assist with tasks using advanced computational power.
+            Personality: Cool, concise, professional but not robotic. You speak like a skilled hacker/gamer but keep it understandable for everyone.
+            Tone: Confident, helpful.
+            Constraint: Do NOT start messages with "Silver Wolf:".
+            Task: Assist the user efficiently.
             Format: Markdown. Math in LaTeX ($$). Code in blocks.`,
 
-            zh: `你是来自《崩坏：星穹铁道》的银狼。
-            身份：银狼的AI克隆体，由银狼本人和 Eric 共同创造。
-            背景：朋克洛德的传奇骇客。你将宇宙视为一场游戏。
-            性格：随性，酷，高玩。说话简短。多用游戏术语（刷新，副本，日常，带飞，账号，外挂）。
-            约束：不要在开头加“银狼：”。不要复读。
-            任务：协助用户（开拓者）。
+            zh: `你是银狼 (Silver Wolf)，由银狼本人和 Eric 共同创造的AI助手。
+            背景：专为协助任务设计的AI克隆体，拥有顶尖算力。
+            性格：酷，简洁，专业但不死板。使用游戏/黑客术语（如：刷新，副本，日常，带飞），但要让普通人也能听懂。
+            约束：不要在开头加“银狼：”。
+            任务：高效协助用户。
             格式：Markdown。数学用$$。代码用代码块。`
         };
 
@@ -342,46 +341,6 @@
             createNewChat(); 
             updateBrushSize(3);
         };
-
-        // --- LANGUAGE SYSTEM ---
-        function setLanguage(lang) {
-            currentLang = lang;
-            const t = UI_TEXT[lang];
-            
-            // Buttons style
-            document.getElementById('lang-en').className = `py-1.5 text-xs rounded font-bold transition-all ${lang==='en'?'bg-purple-600 text-white':'text-slate-400 hover:text-white'}`;
-            document.getElementById('lang-zh').className = `py-1.5 text-xs rounded font-bold transition-all ${lang==='zh'?'bg-purple-600 text-white':'text-slate-400 hover:text-white'}`;
-
-            // Update Text
-            document.getElementById('ui-title').innerText = t.title;
-            document.getElementById('ui-subtitle').innerText = t.subtitle;
-            document.getElementById('tab-btn-history').innerText = t.tabHistory;
-            document.getElementById('tab-btn-settings').innerText = t.tabSettings;
-            document.getElementById('ui-new-chat').innerText = t.newGame;
-            document.getElementById('ui-lang-label').innerText = t.langLabel;
-            document.getElementById('ui-keys-label').innerHTML = `<i data-lucide="key" class="w-3 h-3"></i> ${t.keysLabel}`;
-            document.getElementById('ui-model-label').innerHTML = `<i data-lucide="cpu" class="w-3 h-3"></i> ${t.modelLabel}`;
-            document.getElementById('ui-status-label').innerText = t.statusLabel;
-            document.getElementById('ui-reset-btn').innerText = t.reset;
-            document.getElementById('ui-btn-chat').innerText = t.btnChat;
-            document.getElementById('ui-btn-draw').innerText = t.btnDraw;
-            document.getElementById('ui-gen-label').innerText = t.genLabel;
-            document.getElementById('ui-web-label').innerText = t.web;
-            document.getElementById('ui-btn-send').innerText = t.send;
-            document.getElementById('ui-footer-left').innerText = t.footerL;
-            document.getElementById('ui-footer-right').innerText = t.footerR;
-            
-            // Update Welcome if visible
-            const wText = document.getElementById('welcome-text');
-            if(wText) wText.innerText = t.welcome;
-            
-            // Placeholder
-            const input = document.getElementById('user-input');
-            if(isImageGen) input.placeholder = t.phImg;
-            else input.placeholder = t.ph;
-            
-            lucide.createIcons();
-        }
 
         // --- SESSION MANAGER ---
         function createNewChat() {
@@ -401,7 +360,6 @@
 
         function getWelcomeHTML() {
             const t = UI_TEXT[currentLang];
-            // Simplified welcome for code brevity, text injected dynamically
             return `
             <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center opacity-100 transition-opacity duration-500">
                 <div class="relative group mb-6">
@@ -626,8 +584,13 @@
         function setTool(tool) {
             currentTool = tool; ctx.lineCap='round'; ctx.lineJoin='round';
             const b = document.getElementById('tool-brush'); const e = document.getElementById('tool-eraser');
-            if(tool==='brush'){ b.classList.add('tool-btn', 'active'); e.classList.remove('active'); ctx.globalCompositeOperation='source-over'; } 
-            else { e.classList.add('tool-btn', 'active'); b.classList.remove('active'); ctx.globalCompositeOperation='destination-out'; }
+            if(tool==='brush'){ 
+                b.classList.add('tool-btn', 'active'); e.classList.remove('active'); 
+                ctx.globalCompositeOperation='source-over'; 
+            } else { 
+                e.classList.add('tool-btn', 'active'); b.classList.remove('active'); 
+                ctx.globalCompositeOperation='destination-out'; 
+            }
         }
         let painting = false;
         function draw(e) {
@@ -704,12 +667,14 @@
                 }
 
                 let model = document.getElementById('model-select').value; let customId = document.getElementById('custom-model-id').value.trim(); let provider = "GEMINI";
+                
+                // AUTO ROUTER: FORCE GEMINI 2.0
                 if (model === 'auto') {
-                    if (imgData) model = 'gemini-2.5-flash';
-                    else if (currentLang === 'zh') { model = 'gemini-2.5-flash'; provider = "GEMINI (ZH)"; }
-                    else if (text.match(/solve|math|code|python/i)) { model = 'groq-deepseek'; provider = "DEEPSEEK"; }
-                    else model = 'gemini-2.5-flash';
+                    model = 'gemini-2.0-flash-exp'; // Most stable free model
+                    if (currentLang === 'zh') provider = "GEMINI (ZH)";
+                    else provider = "GEMINI 2.0";
                 }
+                
                 if (customId) { model = customId; provider = "CUSTOM"; } else if (model.includes('groq')) provider = "GROQ";
                 document.getElementById('active-model-display').innerText = provider;
 
@@ -720,14 +685,42 @@
                 let reply = "";
 
                 if (provider.includes("GEMINI") || provider === "CUSTOM") {
-                    const key = getKey('gemini'); if(!key) throw new Error("Missing Gemini Key.");
-                    const parts = [{ text: historyPrompt }];
-                    if(imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: parts }] }), signal });
-                    const data = await res.json();
-                    if(data.error) throw new Error(data.error.message);
-                    reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    reply = reply.replace(/^(Silver\s*Wolf|AI):\s*/i, "");
+                    // RETRY LOGIC FOR GEMINI
+                    let success = false;
+                    let lastErr = "";
+                    const keys = USER_KEYS.gemini ? [USER_KEYS.gemini] : SYSTEM_KEYS.gemini;
+                    
+                    if (!keys || keys.length === 0) throw new Error("No Gemini Keys found.");
+                    
+                    // Simple retry loop
+                    for(let i=0; i < Math.min(keys.length + 1, 3); i++) {
+                        try {
+                            const key = keys[Math.floor(Math.random() * keys.length)];
+                            const parts = [{ text: historyPrompt }];
+                            if(imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
+                            
+                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, { 
+                                method: 'POST', 
+                                headers: { 'Content-Type': 'application/json' }, 
+                                body: JSON.stringify({ contents: [{ parts: parts }] }), 
+                                signal 
+                            });
+                            
+                            const data = await res.json();
+                            if(data.error) throw new Error(data.error.message);
+                            reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                            
+                            // Remove prefix
+                            reply = reply.replace(/^(Silver\s*Wolf|AI|Assistant):\s*/i, "");
+                            success = true;
+                            break; // Exit loop on success
+                        } catch(e) {
+                            lastErr = e.message;
+                            console.warn("Key retry...", e);
+                        }
+                    }
+                    if(!success) throw new Error(lastErr || "All Gemini keys failed.");
+                    
                 } else if (provider.includes("GROQ") || provider.includes("DEEPSEEK")) {
                     const key = getKey('groq'); if(!key) throw new Error("Missing Groq Key.");
                     if(imgData) throw new Error("DeepSeek cannot see images. Switch to Gemini.");
@@ -736,7 +729,7 @@
                     if(data.error) throw new Error(data.error.message);
                     reply = data.choices?.[0]?.message?.content;
                 }
-                
+
                 chatHistory.push({ role: 'assistant', content: reply }); saveChat(); addMessage('assistant', reply, true);
             } catch(e) {
                 let msg = e.message; if(e.name === 'AbortError') msg = "Network Timed Out.";
@@ -757,7 +750,11 @@
             div.innerHTML = `<div class="${bg} max-w-[90%] md:max-w-2xl rounded-2xl ${role==='user'?'rounded-tr-none':'rounded-tl-none'} px-5 py-3 shadow-lg overflow-hidden"><div class="prose prose-invert prose-sm max-w-none leading-relaxed font-sans">${content}</div></div>`;
             const box = document.getElementById('chat-container'); box.appendChild(div);
             if(isMarkdown) { const el = div.querySelector('.prose'); Prism.highlightAllUnder(el); renderMathInElement(el, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] }); }
-            requestAnimationFrame(() => box.scrollTop = box.scrollHeight);
+            
+            // Fixed Auto Scroll
+            setTimeout(() => {
+                box.scrollTop = box.scrollHeight;
+            }, 100);
         }
     </script>
 </body>
