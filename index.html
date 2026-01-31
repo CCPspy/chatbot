@@ -26,8 +26,8 @@
         .msg-enter { animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        #drawing-canvas { cursor: crosshair; touch-action: none; background: #020617; border-radius: 8px; border: 1px solid #334155; }
-        .tool-active { background: rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.8); color: #d8b4fe; }
+        #drawing-canvas { touch-action: none; background: #020617; }
+        .tool-btn.active { background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.5); color: #d8b4fe; }
         
         body { height: 100vh; width: 100vw; overflow: hidden; background-color: #020617; }
         main { height: 100%; display: flex; flex-direction: column; }
@@ -38,6 +38,9 @@
         
         .chat-item .action-btns { opacity: 0; transition: opacity 0.2s; }
         .chat-item:hover .action-btns { opacity: 1; }
+
+        /* Fullscreen Canvas Override */
+        .canvas-fullscreen { position: fixed !important; top: 0; left: 0; width: 100vw !important; height: 100vh !important; z-index: 50; border-radius: 0 !important; border: none !important; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 flex font-sans antialiased selection:bg-purple-500/30">
@@ -48,7 +51,7 @@
             <h1 class="text-2xl font-black bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent flex items-center gap-2 tracking-tight">
                 SilverWolf II
             </h1>
-            <p class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Code V4</p>
+            <p class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Code V5</p>
         </div>
 
         <!-- TABS -->
@@ -222,22 +225,32 @@
                             oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"
                             onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); handleSend();}"></textarea>
                         
-                        <!-- Drawing Mode -->
-                        <div id="canvas-container" class="hidden h-72 w-full relative rounded-lg overflow-hidden border border-slate-700/50 bg-slate-950">
-                            <canvas id="drawing-canvas" class="w-full h-full"></canvas>
-                            
-                            <!-- Tools -->
-                            <div class="absolute top-3 left-3 flex flex-col gap-2 bg-slate-900/90 p-2 rounded-lg backdrop-blur border border-slate-700 shadow-xl">
-                                <button onclick="setTool('brush')" id="tool-brush" class="p-2 rounded tool-active"><i data-lucide="paintbrush" class="w-4 h-4"></i></button>
-                                <button onclick="setTool('eraser')" id="tool-eraser" class="p-2 rounded text-slate-500 hover:bg-slate-800"><i data-lucide="eraser" class="w-4 h-4"></i></button>
-                                <div class="h-px w-full bg-slate-700 my-1"></div>
-                                <input type="color" id="color-picker" value="#a855f7" class="w-6 h-6 rounded bg-transparent border-none cursor-pointer">
-                                <input type="range" id="brush-size" min="1" max="20" value="3" class="w-6 h-20 writing-mode-vertical appearance-none bg-slate-800 rounded-full overflow-hidden [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-full [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:bg-purple-500">
-                            </div>
-
-                            <button onclick="clearCanvas()" class="absolute top-3 right-3 p-2 bg-slate-900/90 rounded-lg text-red-400 hover:bg-red-500/20 border border-slate-800 transition-colors" title="Clear">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
+                        <!-- Drawing Mode (Revised) -->
+                        <div id="canvas-wrapper" class="hidden flex-col h-72 w-full border border-slate-700/50 bg-slate-950 rounded-lg overflow-hidden transition-all duration-300">
+                             <!-- Whiteboard Toolbar -->
+                             <div class="h-10 bg-slate-900 border-b border-slate-800 flex items-center px-2 justify-between">
+                                <div class="flex items-center gap-2">
+                                    <button onclick="setTool('brush')" id="tool-brush" class="p-1.5 rounded tool-btn active transition-colors" title="Brush"><i data-lucide="paintbrush" class="w-4 h-4"></i></button>
+                                    <button onclick="setTool('eraser')" id="tool-eraser" class="p-1.5 rounded tool-btn transition-colors text-slate-500" title="Eraser"><i data-lucide="eraser" class="w-4 h-4"></i></button>
+                                    <div class="w-px h-4 bg-slate-800 mx-1"></div>
+                                    <input type="color" id="color-picker" value="#a855f7" class="w-6 h-6 rounded bg-transparent border-none cursor-pointer" title="Color">
+                                    
+                                    <!-- Visual Size Slider -->
+                                    <div class="flex items-center gap-2 ml-2 bg-slate-800/50 rounded-full px-2 py-1">
+                                        <div id="size-dot" class="w-1 h-1 rounded-full bg-slate-400"></div>
+                                        <input type="range" id="brush-size" min="1" max="20" value="3" class="w-16 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-purple-500 [&::-webkit-slider-thumb]:rounded-full" oninput="updateBrushSize(this.value)">
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="clearCanvas()" class="p-1.5 rounded hover:bg-red-500/20 text-red-400 transition-colors" title="Clear Canvas"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                    <button onclick="toggleCanvasSize()" class="p-1.5 rounded hover:bg-slate-700 text-slate-400 transition-colors" title="Maximize/Minimize"><i data-lucide="maximize" class="w-4 h-4"></i></button>
+                                </div>
+                             </div>
+                             
+                             <!-- Canvas -->
+                             <div class="flex-1 relative bg-[#020617] cursor-crosshair">
+                                <canvas id="drawing-canvas" class="w-full h-full block"></canvas>
+                             </div>
                         </div>
                     </div>
 
@@ -288,6 +301,7 @@
         let currentTool = 'brush';
         let currentLang = 'en';
         let activeController = null;
+        let isCanvasMaximized = false;
 
         // --- PROMPTS ---
         const PROMPTS = {
@@ -312,14 +326,23 @@
             loadKeys();
             loadChatList();
             createNewChat(); 
+            // Initialize brush size preview
+            updateBrushSize(3);
         };
 
         // --- SESSION MANAGER ---
         function createNewChat() {
+            stopGeneration(); // Stop any pending stuff
             currentChatId = Date.now();
             chatHistory = [];
+            
+            // Reset UI
             document.getElementById('chat-container').innerHTML = "";
             document.getElementById('welcome-screen').style.display = 'flex';
+            document.getElementById('user-input').value = "";
+            clearCanvas();
+            setMode('text'); // Reset to text mode
+            
             updateChatListUI();
         }
 
@@ -360,6 +383,8 @@
         function loadChat(id) {
             const chat = savedChats.find(c => c.id === id);
             if(!chat) return;
+            
+            stopGeneration();
             currentChatId = id;
             chatHistory = chat.history;
             
@@ -538,18 +563,47 @@
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         
         function resizeCanvas() {
-            const rect = canvas.parentElement.getBoundingClientRect();
-            if (canvas.width !== rect.width || canvas.height !== rect.height) {
-                const s = canvas.toDataURL(); canvas.width = rect.width; canvas.height = rect.height;
-                const i = new Image(); i.onload=()=>ctx.drawImage(i,0,0); i.src=s;
+            const wrapper = document.getElementById('canvas-wrapper');
+            const rect = wrapper.getBoundingClientRect();
+            // Don't resize if hidden, otherwise dimensions are 0
+            if (wrapper.classList.contains('hidden')) return;
+
+            // Only resize if different to avoid clearing
+            // Note: Canvas drawing buffer size vs display size
+            // We set internal size (width/height) to match display size (clientWidth/clientHeight)
+            // But we must save content first
+            const displayWidth = wrapper.clientWidth;
+            // Subtract toolbar height (40px) if we are in normal mode, or just use container height
+            // Actually wrapper is flex col, canvas is in flex-1 div
+            const displayHeight = wrapper.querySelector('.flex-1').clientHeight;
+
+            if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+                const s = canvas.toDataURL(); 
+                canvas.width = displayWidth; 
+                canvas.height = displayHeight;
+                const i = new Image(); 
+                i.onload=()=>ctx.drawImage(i,0,0); 
+                i.src=s;
                 setTool(currentTool);
             }
         }
+
+        function updateBrushSize(val) {
+            const dot = document.getElementById('size-dot');
+            dot.style.width = val + 'px';
+            dot.style.height = val + 'px';
+        }
+
         function setTool(tool) {
             currentTool = tool; ctx.lineCap='round'; ctx.lineJoin='round';
             const b = document.getElementById('tool-brush'); const e = document.getElementById('tool-eraser');
-            if(tool==='brush'){ b.classList.add('tool-active'); e.classList.remove('tool-active'); ctx.globalCompositeOperation='source-over'; }
-            else { e.classList.add('tool-active'); b.classList.remove('tool-active'); ctx.globalCompositeOperation='destination-out'; }
+            if(tool==='brush'){ 
+                b.classList.add('tool-btn', 'active'); e.classList.remove('active'); 
+                ctx.globalCompositeOperation='source-over'; 
+            } else { 
+                e.classList.add('tool-btn', 'active'); b.classList.remove('active'); 
+                ctx.globalCompositeOperation='destination-out'; 
+            }
         }
         
         // Canvas Events
@@ -559,7 +613,7 @@
             const r = canvas.getBoundingClientRect();
             const x = (e.touches?e.touches[0].clientX:e.clientX)-r.left;
             const y = (e.touches?e.touches[0].clientY:e.clientY)-r.top;
-            ctx.lineWidth = document.getElementById('brush-size').value * (currentTool==='eraser'?4:1);
+            ctx.lineWidth = document.getElementById('brush-size').value * (currentTool==='eraser'?5:1);
             if(currentTool==='brush') ctx.strokeStyle = document.getElementById('color-picker').value;
             ctx.lineTo(x,y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x,y);
         }
@@ -575,13 +629,30 @@
         function setMode(mode) {
             isDrawing = mode==='draw';
             document.getElementById('user-input').classList.toggle('hidden', isDrawing);
-            document.getElementById('canvas-container').classList.toggle('hidden', !isDrawing);
+            const wrapper = document.getElementById('canvas-wrapper');
+            wrapper.classList.toggle('hidden', !isDrawing);
+            wrapper.style.display = isDrawing ? 'flex' : 'none'; // Ensure flex layout
+
             document.getElementById('tab-draw').classList.toggle('bg-purple-600', isDrawing);
             document.getElementById('tab-draw').classList.toggle('text-white', isDrawing);
             document.getElementById('tab-text').classList.toggle('bg-purple-600', !isDrawing);
             document.getElementById('tab-text').classList.toggle('text-white', !isDrawing);
             if(isDrawing) setTimeout(resizeCanvas, 50);
         }
+
+        function toggleCanvasSize() {
+            const wrapper = document.getElementById('canvas-wrapper');
+            isCanvasMaximized = !isCanvasMaximized;
+            
+            if(isCanvasMaximized) {
+                wrapper.classList.add('canvas-fullscreen');
+            } else {
+                wrapper.classList.remove('canvas-fullscreen');
+            }
+            // Trigger resize after transition
+            setTimeout(resizeCanvas, 50);
+        }
+
         function toggleImageMode() {
             isImageGen = !isImageGen;
             document.getElementById('img-gen-knob').style.transform = isImageGen ? "translateX(16px)" : "translateX(0)";
@@ -612,8 +683,13 @@
             let imgData = null;
             
             if(isDrawing) {
-                const t = document.createElement('canvas'); t.width=canvas.width; t.height=canvas.height;
-                if(canvas.toDataURL() !== t.toDataURL()) imgData = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+                // Check if canvas is empty
+                const blank = document.createElement('canvas');
+                blank.width = canvas.width; blank.height = canvas.height;
+                // Only send if different from blank
+                if(canvas.toDataURL() !== blank.toDataURL()) {
+                    imgData = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+                }
             }
             if(!text && !imgData) return;
 
