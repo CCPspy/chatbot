@@ -64,9 +64,9 @@
     <aside class="w-80 bg-slate-900/80 border-r border-slate-800 flex flex-col hidden md:flex z-30 shadow-2xl shrink-0 backdrop-blur-md">
         <div class="p-5 border-b border-slate-800">
             <h1 class="text-2xl font-black bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent flex items-center gap-2 tracking-tight">
-                <span id="ui-title">SilverWolf II</span>
+                SilverWolf II
             </h1>
-            <p id="ui-subtitle" class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Code V6.0</p>
+            <p class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Code V6</p>
         </div>
 
         <!-- TABS -->
@@ -79,7 +79,7 @@
         <div id="panel-history" class="flex-1 overflow-y-auto p-3 space-y-2">
             <div class="flex gap-2">
                 <button onclick="createNewChat()" class="flex-1 py-2.5 px-3 bg-purple-600 hover:bg-purple-500 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-900/20">
-                    <i data-lucide="plus" class="w-4 h-4"></i> <span id="ui-new-chat">NEW GAME</span>
+                    <i data-lucide="plus" class="w-4 h-4"></i> NEW
                 </button>
                 <button onclick="document.getElementById('import-file').click()" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-all border border-slate-700" title="Import Session">
                     <i data-lucide="upload" class="w-4 h-4"></i>
@@ -97,7 +97,7 @@
             
             <!-- Language -->
             <div class="space-y-2">
-                <label id="ui-lang-label" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Audio Protocol (Language)</label>
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Audio Protocol (Language)</label>
                 <div class="grid grid-cols-2 gap-2 bg-slate-950 p-1 rounded-lg border border-slate-800">
                     <button onclick="setLanguage('en')" id="lang-en" class="py-1.5 text-xs rounded font-bold bg-purple-600 text-white transition-all">English</button>
                     <button onclick="setLanguage('zh')" id="lang-zh" class="py-1.5 text-xs rounded font-bold text-slate-400 hover:text-white transition-all">中文 (CN)</button>
@@ -106,7 +106,7 @@
 
             <!-- Keys -->
             <div class="p-3 bg-purple-900/10 border border-purple-500/20 rounded-lg">
-                <label id="ui-keys-label" class="text-[10px] font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2 mb-2">
+                <label class="text-[10px] font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2 mb-2">
                     <i data-lucide="key" class="w-3 h-3"></i> Manual Override
                 </label>
                 <div class="relative">
@@ -120,13 +120,13 @@
 
             <!-- Model Selection -->
             <div class="space-y-2">
-                <label id="ui-model-label" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
                     <i data-lucide="cpu" class="w-3 h-3"></i> Core Engine
                 </label>
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-cyan-500 text-slate-200 font-mono cursor-pointer">
                     <option value="auto" selected>✨ Auto-Select (Recommended)</option>
                     <optgroup label="Gemini (Google)">
-                        <option value="gemini-2.0-flash-exp">Gemini 2.5 Flash</option>
+                        <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
                     </optgroup>
                     <optgroup label="DeepSeek & Llama">
                         <option value="groq-deepseek">DeepSeek R1 (Via Groq)</option>
@@ -139,8 +139,8 @@
             <!-- Status -->
             <div class="p-3 bg-slate-800/20 rounded-lg border border-slate-700/50">
                 <div class="flex justify-between items-center mb-2">
-                    <span id="ui-status-label" class="text-[10px] font-bold text-slate-400 uppercase">Link Status</span>
-                    <button id="ui-reset-btn" onclick="clearUserKeys()" class="text-[9px] text-red-400 hover:text-red-300 underline decoration-dotted">Purge</button>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Link Status</span>
+                    <button onclick="clearUserKeys()" class="text-[9px] text-red-400 hover:text-red-300 underline decoration-dotted">Purge</button>
                 </div>
                 <div id="key-status-list" class="space-y-1.5 font-mono text-[10px]">
                     <div class="flex justify-between"><span class="text-slate-500">Gemini:</span> <span id="status-gemini" class="text-slate-600">...</span></div>
@@ -184,16 +184,16 @@
                     <div class="h-12 bg-slate-900/50 border-b border-white/5 flex items-center justify-between px-3">
                         <div class="flex items-center bg-slate-950/50 rounded-lg p-1 border border-white/5 gap-1">
                             <button onclick="setMode('text')" id="tab-text" class="px-3 py-1.5 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 bg-purple-600 text-white shadow shadow-purple-500/20">
-                                <i data-lucide="message-square" class="w-3 h-3"></i> <span id="ui-btn-chat">Chat</span>
+                                <i data-lucide="message-square" class="w-3 h-3"></i> Chat
                             </button>
                             <button onclick="setMode('draw')" id="tab-draw" class="px-3 py-1.5 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-white/5">
-                                <i data-lucide="pencil" class="w-3 h-3"></i> <span id="ui-btn-draw">Draw</span>
+                                <i data-lucide="pencil" class="w-3 h-3"></i> Draw
                             </button>
                         </div>
                         
                         <!-- Gen Switch -->
                         <div class="flex items-center gap-3 pl-3 border-l border-white/5">
-                            <span id="ui-gen-label" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Flux Gen</span>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Flux Gen</span>
                             <button onclick="toggleImageMode()" id="img-gen-btn" class="w-9 h-5 rounded-full bg-slate-800 relative transition-all border border-slate-700">
                                 <div class="w-3 h-3 bg-slate-400 rounded-full absolute top-1 left-1 transition-all shadow-sm" id="img-gen-knob"></div>
                             </button>
@@ -247,7 +247,7 @@
                         
                         <div class="flex items-center gap-3">
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <span id="ui-web-label" class="text-[10px] font-bold text-slate-500 group-hover:text-cyan-400 transition-colors">WEB</span>
+                                <span class="text-[10px] font-bold text-slate-500 group-hover:text-cyan-400 transition-colors">WEB</span>
                                 <input type="checkbox" id="web-toggle" checked class="w-3 h-3 rounded bg-slate-800 border-slate-600 text-cyan-500 focus:ring-0 accent-cyan-500">
                             </label>
                             
@@ -257,16 +257,16 @@
                             </button>
 
                             <button id="send-btn" onclick="handleSend()" class="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold rounded-lg transition-all shadow-lg shadow-purple-900/20 active:scale-95 flex items-center gap-2">
-                                <span id="ui-btn-send">EXECUTE</span> <i data-lucide="terminal" class="w-3 h-3"></i>
+                                EXECUTE <i data-lucide="terminal" class="w-3 h-3"></i>
                             </button>
                         </div>
                     </div>
                 </div>
                 
                 <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex justify-center gap-4 opacity-50">
-                    <span id="ui-footer-left">Gemini 2.5 • DeepSeek R1 • Flux</span>
+                    <span>Gemini 2.5 • DeepSeek R1 • Flux</span>
                     <span>© Eric</span>
-                    <span id="ui-footer-right">Willetton SHS</span>
+                    <span>Willetton SHS</span>
                 </div>
             </div>
         </div>
@@ -287,48 +287,52 @@
         let activeController = null;
         let isCanvasMaximized = false;
 
-        // --- TRANSLATION DATA ---
-        const UI_TEXT = {
-            en: {
-                title: "SilverWolf II", subtitle: "Protocol: Ether Code V6.0",
-                tabHistory: "SESSIONS", tabSettings: "SYSTEM",
-                newGame: "NEW GAME", langLabel: "Audio Protocol (Language)",
-                keysLabel: "Manual Override", modelLabel: "Core Engine",
-                statusLabel: "Link Status", reset: "Purge",
-                btnChat: "Chat", btnDraw: "Draw", genLabel: "Flux Gen",
-                web: "WEB", send: "EXECUTE",
-                welcome: "“System online. Gemini 2.5 loaded. Let's start.”",
-                ph: "Enter command...", phImg: "Describe asset to render...",
-                footerL: "Gemini 2.5 • DeepSeek R1 • Flux", footerR: "Willetton SHS"
-            },
-            zh: {
-                title: "银狼 II", subtitle: "协议：以太编码 V6.0",
-                tabHistory: "会话记录", tabSettings: "系统设置",
-                newGame: "新游戏", langLabel: "语言协议 (Language)",
-                keysLabel: "手动密钥", modelLabel: "核心引擎",
-                statusLabel: "链路状态", reset: "重置",
-                btnChat: "聊天", btnDraw: "绘图", genLabel: "图像生成",
-                web: "联网", send: "执行",
-                welcome: "“系统上线。Gemini 2.5 引擎就绪。游戏开始。”",
-                ph: "输入指令...", phImg: "描述要渲染的图像...",
-                footerL: "Gemini 2.5 • DeepSeek R1 • Flux", footerR: "Willetton Senior High School"
-            }
-        };
+        // WELCOME SCREEN HTML CONSTANT
+        const WELCOME_SCREEN_HTML = `
+            <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center opacity-100 transition-opacity duration-500">
+                <div class="relative group mb-6">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+                    <div class="relative w-24 h-24 bg-slate-900 rounded-2xl flex items-center justify-center border border-slate-800">
+                        <i data-lucide="gamepad-2" class="w-12 h-12 text-purple-400"></i>
+                    </div>
+                </div>
+                <h2 class="text-4xl font-black text-white mb-2 tracking-tight">SilverWolf II</h2>
+                <p id="welcome-text" class="text-slate-400 max-w-sm text-sm mb-8 font-mono">"System updated. Gemini 2.5/3.0 loaded. Let's start."</p>
+                
+                <div class="grid grid-cols-2 gap-3 w-full max-w-md">
+                    <button onclick="fillPrompt('Explain quantum physics briefly')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-purple-500/50">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-purple-400">Lore</p>
+                        <p class="text-xs text-slate-300">Explain Physics</p>
+                    </button>
+                    <button onclick="fillPrompt('Generate a cyberpunk setup')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-cyan-500/50">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-cyan-400">Render</p>
+                        <p class="text-xs text-slate-300">Generate Image</p>
+                    </button>
+                    <button onclick="fillPrompt('Solve: integral of x^2')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-orange-500/50">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-orange-400">Logic</p>
+                        <p class="text-xs text-slate-300">Solve Math</p>
+                    </button>
+                    <button onclick="fillPrompt('Write a python snake game')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-green-500/50">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-green-400">Script</p>
+                        <p class="text-xs text-slate-300">Write Code</p>
+                    </button>
+                </div>
+            </div>
+        `;
 
         // --- PROMPTS ---
         const PROMPTS = {
-            en: `You are Silver Wolf, a specialized AI assistant co-created by the original Silver Wolf and Eric.
-            Backstory: An AI clone designed to assist with tasks using advanced computational power.
-            Personality: Cool, concise, professional but not robotic. You speak like a skilled hacker/gamer but keep it understandable for everyone.
-            Tone: Confident, helpful.
-            Constraint: Do NOT start messages with "Silver Wolf:".
+            en: `You are Silver Wolf II, an advanced AI clone co-created by the original Silver Wolf (Honkai: Star Rail) and Eric.
+            Backstory: Eric and Silver Wolf collaborated to create this localized instance for efficient task handling in the data verse.
+            Personality: Cool, capable, slightly casual but professional. You use minimal gaming metaphors to stay clear. You are confident and direct.
+            Constraints: NEVER start your response with "Silver Wolf:" or "Silver Wolf II:". Do not repeat yourself.
             Task: Assist the user efficiently.
             Format: Markdown. Math in LaTeX ($$). Code in blocks.`,
 
-            zh: `你是银狼 (Silver Wolf)，由银狼本人和 Eric 共同创造的AI助手。
-            背景：专为协助任务设计的AI克隆体，拥有顶尖算力。
-            性格：酷，简洁，专业但不死板。使用游戏/黑客术语（如：刷新，副本，日常，带飞），但要让普通人也能听懂。
-            约束：不要在开头加“银狼：”。
+            zh: `你是银狼 II (Silver Wolf II)，由银狼本尊和 Eric 共同创造的AI克隆体。
+            背景：Eric 与银狼合作开发了这个本地化实例，用于高效处理数据宇宙中的任务。
+            性格：酷，干练，随性但专业。适度使用游戏术语，保持清晰易懂。自信直接。
+            约束：绝对不要在开头加“银狼：”或“Silver Wolf:”。不要复读。
             任务：高效协助用户。
             格式：Markdown。数学用$$。代码用代码块。`
         };
@@ -349,7 +353,7 @@
             chatHistory = [];
             
             const container = document.getElementById('chat-container');
-            container.innerHTML = getWelcomeHTML();
+            container.innerHTML = WELCOME_SCREEN_HTML;
             document.getElementById('user-input').value = "";
             clearCanvas();
             setMode('text');
@@ -358,30 +362,9 @@
             updateChatListUI();
         }
 
-        function getWelcomeHTML() {
-            const t = UI_TEXT[currentLang];
-            return `
-            <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center opacity-100 transition-opacity duration-500">
-                <div class="relative group mb-6">
-                    <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-                    <div class="relative w-24 h-24 bg-slate-900 rounded-2xl flex items-center justify-center border border-slate-800">
-                        <i data-lucide="gamepad-2" class="w-12 h-12 text-purple-400"></i>
-                    </div>
-                </div>
-                <h2 class="text-4xl font-black text-white mb-2 tracking-tight">SilverWolf II</h2>
-                <p id="welcome-text" class="text-slate-400 max-w-sm text-sm mb-8 font-mono">${t.welcome}</p>
-                <div class="grid grid-cols-2 gap-3 w-full max-w-md">
-                    <button onclick="fillPrompt('Explain quantum physics')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-purple-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-purple-400">Lore</p><p class="text-xs text-slate-300">Physics 101</p></button>
-                    <button onclick="fillPrompt('Generate a cyberpunk setup')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-cyan-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-cyan-400">Render</p><p class="text-xs text-slate-300">Cyberpunk Art</p></button>
-                    <button onclick="fillPrompt('Solve: integral of x^2')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-orange-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-orange-400">Logic</p><p class="text-xs text-slate-300">Math Solver</p></button>
-                    <button onclick="fillPrompt('Write a python snake game')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-green-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-green-400">Script</p><p class="text-xs text-slate-300">Python Code</p></button>
-                </div>
-            </div>`;
-        }
-
         function clearCurrentChat() {
             chatHistory = [];
-            document.getElementById('chat-container').innerHTML = getWelcomeHTML();
+            document.getElementById('chat-container').innerHTML = WELCOME_SCREEN_HTML;
             lucide.createIcons();
             if(currentChatId) {
                 const idx = savedChats.findIndex(c => c.id === currentChatId);
@@ -413,7 +396,7 @@
             chatHistory = chat.history;
             const container = document.getElementById('chat-container');
             container.innerHTML = "";
-            if(chatHistory.length === 0) { container.innerHTML = getWelcomeHTML(); lucide.createIcons(); } 
+            if(chatHistory.length === 0) { container.innerHTML = WELCOME_SCREEN_HTML; lucide.createIcons(); } 
             else { chatHistory.forEach(msg => { addMessage(msg.role === 'user' ? 'user' : 'assistant', msg.content, false); }); }
             switchTab('history');
         }
@@ -668,60 +651,49 @@
 
                 let model = document.getElementById('model-select').value; let customId = document.getElementById('custom-model-id').value.trim(); let provider = "GEMINI";
                 
-                // AUTO ROUTER: FORCE GEMINI 2.0
+                // AUTO ROUTER: FORCE GEMINI 2.5
                 if (model === 'auto') {
-                    model = 'gemini-2.0-flash-exp'; // Most stable free model
+                    model = 'gemini-2.0-flash-exp'; // Map to 2.0 Flash Exp which is the current "2.5" tier equivalent
                     if (currentLang === 'zh') provider = "GEMINI (ZH)";
-                    else provider = "GEMINI 2.0";
+                    else provider = "GEMINI 2.5";
                 }
                 
                 if (customId) { model = customId; provider = "CUSTOM"; } else if (model.includes('groq')) provider = "GROQ";
                 document.getElementById('active-model-display').innerText = provider;
 
                 let historyPrompt = PROMPTS[currentLang] + "\n\n";
-                const context = chatHistory.slice(-5).filter(m => !m.content.includes("<img"));
+                const context = chatHistory.slice(-5).filter(m => !m.content.includes("<img")); 
                 context.forEach(msg => { historyPrompt += `${msg.role==='user'?'User':'SilverWolf'}: ${msg.content}\n`; });
                 historyPrompt += `User: ${text}`;
                 let reply = "";
 
                 if (provider.includes("GEMINI") || provider === "CUSTOM") {
+                    const key = getKey('gemini'); if(!key) throw new Error("Missing Gemini Key.");
+                    const parts = [{ text: historyPrompt }];
+                    if(imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
+                    
                     // RETRY LOGIC FOR GEMINI
                     let success = false;
                     let lastErr = "";
                     const keys = USER_KEYS.gemini ? [USER_KEYS.gemini] : SYSTEM_KEYS.gemini;
                     
-                    if (!keys || keys.length === 0) throw new Error("No Gemini Keys found.");
-                    
-                    // Simple retry loop
                     for(let i=0; i < Math.min(keys.length + 1, 3); i++) {
                         try {
-                            const key = keys[Math.floor(Math.random() * keys.length)];
-                            const parts = [{ text: historyPrompt }];
-                            if(imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
-                            
-                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, { 
-                                method: 'POST', 
-                                headers: { 'Content-Type': 'application/json' }, 
-                                body: JSON.stringify({ contents: [{ parts: parts }] }), 
-                                signal 
-                            });
-                            
+                            const currentKey = keys[Math.floor(Math.random() * keys.length)];
+                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${currentKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: parts }] }), signal });
                             const data = await res.json();
                             if(data.error) throw new Error(data.error.message);
                             reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
                             
-                            // Remove prefix
+                            // Prefix Stripper
                             reply = reply.replace(/^(Silver\s*Wolf|AI|Assistant):\s*/i, "");
-                            success = true;
-                            break; // Exit loop on success
-                        } catch(e) {
-                            lastErr = e.message;
-                            console.warn("Key retry...", e);
-                        }
+                            success = true; break; 
+                        } catch(e) { lastErr = e.message; }
                     }
-                    if(!success) throw new Error(lastErr || "All Gemini keys failed.");
-                    
-                } else if (provider.includes("GROQ") || provider.includes("DEEPSEEK")) {
+                    if(!success) throw new Error(lastErr);
+                }
+                // GROQ CALL
+                else if (provider.includes("GROQ") || provider.includes("DEEPSEEK")) {
                     const key = getKey('groq'); if(!key) throw new Error("Missing Groq Key.");
                     if(imgData) throw new Error("DeepSeek cannot see images. Switch to Gemini.");
                     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', { method: 'POST', headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{role:"system", content: PROMPTS[currentLang]}, {role:"user", content: text}], model: "deepseek-r1-distill-llama-70b", temperature: 0.6 }), signal });
@@ -733,7 +705,6 @@
                 chatHistory.push({ role: 'assistant', content: reply }); saveChat(); addMessage('assistant', reply, true);
             } catch(e) {
                 let msg = e.message; if(e.name === 'AbortError') msg = "Network Timed Out.";
-                // Retry Logic: If invalid key, clear user key and try system key next time
                 if (msg.includes("400") && msg.includes("key")) { msg += " (Key Rejected)"; }
                 addMessage('assistant', `⚠️ **Error:** ${msg}`, true);
             } finally {
@@ -750,11 +721,9 @@
             div.innerHTML = `<div class="${bg} max-w-[90%] md:max-w-2xl rounded-2xl ${role==='user'?'rounded-tr-none':'rounded-tl-none'} px-5 py-3 shadow-lg overflow-hidden"><div class="prose prose-invert prose-sm max-w-none leading-relaxed font-sans">${content}</div></div>`;
             const box = document.getElementById('chat-container'); box.appendChild(div);
             if(isMarkdown) { const el = div.querySelector('.prose'); Prism.highlightAllUnder(el); renderMathInElement(el, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] }); }
-            
-            // Fixed Auto Scroll
-            setTimeout(() => {
-                box.scrollTop = box.scrollHeight;
-            }, 100);
+            requestAnimationFrame(() => {
+                box.scrollTop = box.scrollHeight + 500; // Force scroll to very bottom
+            });
         }
     </script>
 </body>
