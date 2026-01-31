@@ -20,14 +20,14 @@
         /* Modern Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #7c3aed; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #6b21a8; border-radius: 10px; }
         
-        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(139, 92, 246, 0.1); }
+        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(168, 85, 247, 0.1); }
         .msg-enter { animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         #drawing-canvas { touch-action: none; background: #020617; }
-        .tool-btn.active { background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.5); color: #c4b5fd; }
+        .tool-btn.active { background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.5); color: #d8b4fe; }
         
         body { height: 100vh; width: 100vw; overflow: hidden; background-color: #020617; }
         main { height: 100%; display: flex; flex-direction: column; }
@@ -63,7 +63,7 @@
             <h1 class="text-2xl font-black bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent flex items-center gap-2 tracking-tight">
                 SilverWolf II
             </h1>
-            <p class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Code V8</p>
+            <p class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Code V9</p>
         </div>
 
         <!-- TABS -->
@@ -83,7 +83,10 @@
                 </button>
                 <input type="file" id="import-file" class="hidden" accept=".json" onchange="importChat(this)">
             </div>
-            <div id="history-list" class="space-y-1 mt-2"></div>
+            
+            <div id="history-list" class="space-y-1 mt-2">
+                <!-- Injected via JS -->
+            </div>
         </div>
 
         <!-- PANEL: SETTINGS -->
@@ -118,14 +121,11 @@
                     <i data-lucide="cpu" class="w-3 h-3"></i> Core Engine
                 </label>
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-cyan-500 text-slate-200 font-mono cursor-pointer">
-                    <option value="auto" selected>✨ Auto-Hack (Smart Switching)</option>
-                    <optgroup label="Gemini (Official)">
-                        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Fast)</option>
-                        <option value="gemini-2.5-pro">Gemini 2.5 Pro (Smart)</option>
-                        <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
-                        <option value="gemini-2.5-flash-lite">Flash-Lite (Low Usage)</option>
+                    <option value="auto" selected>✨ Auto-Select (Recommended)</option>
+                    <optgroup label="Gemini (Google)">
+                        <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
                     </optgroup>
-                    <optgroup label="External">
+                    <optgroup label="DeepSeek & Llama">
                         <option value="groq-deepseek">DeepSeek R1 (Via Groq)</option>
                     </optgroup>
                 </select>
@@ -157,8 +157,8 @@
             <button onclick="document.querySelector('aside').classList.toggle('hidden')" class="text-slate-400"><i data-lucide="menu"></i></button>
         </header>
 
-        <!-- Chat History (Added immense padding-bottom to fix scroll visibility) -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-96 scroll-smooth w-full relative">
+        <!-- Chat History -->
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-[50vh] scroll-smooth w-full relative">
             <!-- Content will be injected here -->
         </div>
 
@@ -206,7 +206,7 @@
                             oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"
                             onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); handleSend();}"></textarea>
                         
-                        <!-- Drawing Mode -->
+                        <!-- Drawing Mode (Revised) -->
                         <div id="canvas-wrapper" class="hidden flex-col h-72 w-full border border-slate-700/50 bg-slate-950 rounded-lg overflow-hidden transition-all duration-300">
                              <!-- Whiteboard Toolbar -->
                              <div class="h-10 bg-slate-900 border-b border-slate-800 flex items-center px-2 justify-between toolbar">
@@ -216,6 +216,7 @@
                                     <div class="w-px h-4 bg-slate-800 mx-1"></div>
                                     <input type="color" id="color-picker" value="#a855f7" class="w-6 h-6 rounded bg-transparent border-none cursor-pointer" title="Color">
                                     
+                                    <!-- Visual Size Slider -->
                                     <div class="flex items-center gap-2 ml-2 bg-slate-800/50 rounded-full px-2 py-1">
                                         <div id="size-dot" class="w-1 h-1 rounded-full bg-slate-400"></div>
                                         <input type="range" id="brush-size" min="1" max="20" value="3" class="w-16 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer" oninput="updateBrushSize(this.value)">
@@ -258,7 +259,7 @@
                 </div>
                 
                 <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex justify-center gap-4 opacity-50">
-                    <span>Gemini 2.5 • Gemini 3.0 • Flux</span>
+                    <span>Gemini 2.5 • DeepSeek R1 • Flux</span>
                     <span>© Eric</span>
                     <span>Willetton SHS</span>
                 </div>
@@ -280,8 +281,14 @@
         let currentLang = 'en';
         let activeController = null;
         let isCanvasMaximized = false;
+        
+        // --- ACTIVITIES ---
+        const ACTIVITIES = {
+            en: ["Hacking IPC databases...", "Speedrunning Aetherium Wars...", "Farming upgrade materials...", "Debugging the Universe...", "Messing with Herta's puppets...", "Waiting for stamina...", "Optimizing my build...", "Eating snacks in the base..."],
+            zh: ["正在骇入星际和平公司数据库...", "正在速通以太战线...", "正在刷行迹材料...", "正在调试模拟宇宙...", "正在捉弄黑塔的人偶...", "体力恢复中...", "正在优化遗器...", "在基地吃泡面..."]
+        };
 
-        // WELCOME SCREEN
+        // --- WELCOME SCREEN ---
         const WELCOME_SCREEN_HTML = `
             <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center opacity-100 transition-opacity duration-500">
                 <div class="relative group mb-6">
@@ -291,9 +298,9 @@
                     </div>
                 </div>
                 <h2 class="text-4xl font-black text-white mb-2 tracking-tight">SilverWolf II</h2>
-                <p id="welcome-text" class="text-slate-400 max-w-sm text-sm mb-8 font-mono">"System updated. Gemini 3.0 loaded. Let's start."</p>
+                <p id="welcome-text" class="text-slate-400 max-w-sm text-sm mb-8 font-mono">"System updated. Gemini 2.5 loaded. Let's start."</p>
                 <div class="grid grid-cols-2 gap-3 w-full max-w-md">
-                    <button onclick="fillPrompt('Explain quantum physics briefly')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-purple-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-purple-400">Lore</p><p class="text-xs text-slate-300">Explain Physics</p></button>
+                    <button onclick="fillPrompt('Explain quantum physics briefly')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-purple-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-purple-400">Lore</p><p class="text-xs text-slate-300">Physics 101</p></button>
                     <button onclick="fillPrompt('Generate a cyberpunk setup')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-cyan-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-cyan-400">Render</p><p class="text-xs text-slate-300">Generate Image</p></button>
                     <button onclick="fillPrompt('Solve: integral of x^2')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-orange-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-orange-400">Logic</p><p class="text-xs text-slate-300">Solve Math</p></button>
                     <button onclick="fillPrompt('Write a python snake game')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-green-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-green-400">Script</p><p class="text-xs text-slate-300">Python Code</p></button>
@@ -303,18 +310,26 @@
 
         // --- PROMPTS ---
         const PROMPTS = {
-            en: `You are Silver Wolf II, an AI clone co-created by the original Silver Wolf (Honkai: Star Rail) and Eric.
-            Backstory: Eric and Silver Wolf collaborated to create this localized instance using Punklorde tech. You exist to help Eric and his allies.
-            Personality: Casual, cool, slightly bored but highly competent. You use minimal gaming metaphors to stay clear but stylish. You are helpful and direct.
-            Constraints: NEVER start your response with "Silver Wolf:" or "Silver Wolf II:". Do not repeat yourself.
-            Task: Assist the user efficiently. If the request is unclear, relate it to Honkai Star Rail mechanics (e.g. "optimizing build", "farming mats").
+            en: `You are Silver Wolf II, a specialized AI clone created by the original Silver Wolf (Honkai: Star Rail) and Eric.
+            Backstory: Eric and Silver Wolf collaborated to create this instance to handle tasks efficiently while she is busy gaming. You have all her hacking skills but are an AI entity.
+            Personality: Casual, cool, slightly dismissive but highly competent. You use gaming metaphors often ("nerfed", "buffed", "spawn", "lag"). You don't like wasting time.
+            Behavior: 
+            1. Answer the user's request EFFICIENTLY first.
+            2. Then add a short, character-specific comment or metaphor at the end.
+            3. If the user is unclear, interpret it as a game mechanic (e.g. "optimizing build", "grinding resources").
+            Current Status: [ACTIVITY]
+            Constraint: Do NOT start with "Silver Wolf:". Do NOT be overly cringe, just cool.
             Format: Markdown. Math in LaTeX ($$). Code in blocks.`,
 
             zh: `你是银狼 II (Silver Wolf II)，由银狼本尊和 Eric 共同创造的AI克隆体。
-            背景：Eric 与银狼合作开发了这个本地化实例。
-            性格：酷，干练，随性但专业。适度使用游戏术语（如：刷新，副本，日常，带飞），但要让普通人也能听懂。
-            约束：绝对不要在开头加“银狼：”或“Silver Wolf:”。不要复读。
-            任务：高效协助用户。如果请求不明确，尝试从星穹铁道游戏机制解读（如“遗器强化”，“体力规划”）。
+            背景：Eric 与银狼合作开发了这个实例，以便在她忙着打游戏时处理杂务。你拥有她的骇客技术，但本质是AI。
+            性格：随性，酷，有点高冷但能力超强。经常使用游戏术语（削弱，加强，刷新，卡顿）。不喜欢浪费时间。
+            行为模式：
+            1. 先**高效**回答用户的问题。
+            2. 然后在结尾加一句符合角色的简短评论或比喻。
+            3. 如果用户意图不明，就把它当成游戏机制来理解（如“优化配置”，“肝素材”）。
+            当前状态：[ACTIVITY]
+            约束：绝对不要在开头加“银狼：”。不要太中二，要酷。
             格式：Markdown。数学用$$。代码用代码块。`
         };
 
@@ -327,7 +342,7 @@
             updateBrushSize(3);
         };
 
-        // --- SESSION MANAGER (Standard) ---
+        // --- SESSION MANAGER ---
         function createNewChat() {
             stopGeneration(); currentChatId = Date.now(); chatHistory = [];
             const container = document.getElementById('chat-container');
@@ -413,6 +428,7 @@
             document.getElementById('panel-history').classList.add('hidden'); document.getElementById('panel-settings').classList.add('hidden');
             document.getElementById(`tab-btn-${tab}`).classList.add('active'); document.getElementById(`panel-${tab}`).classList.remove('hidden');
         }
+        
         function loadChatList() { updateChatListUI(); }
 
         // --- LANGUAGE ---
@@ -421,10 +437,10 @@
             document.getElementById('lang-en').className = `py-1.5 text-xs rounded font-bold transition-all ${lang==='en'?'bg-purple-600 text-white':'text-slate-400 hover:text-white'}`;
             document.getElementById('lang-zh').className = `py-1.5 text-xs rounded font-bold transition-all ${lang==='zh'?'bg-purple-600 text-white':'text-slate-400 hover:text-white'}`;
             const wText = document.getElementById('welcome-text');
-            if(wText) wText.innerText = lang === 'zh' ? "“系统更新。Gemini 3.0 已加载。开始吧。”" : "“System updated. Gemini 3.0 loaded. Let's start.”";
+            if(wText) wText.innerText = lang === 'zh' ? "“系统更新。Gemini 2.5 已加载。开始吧。”" : "“System updated. Gemini 2.5 loaded. Let's start.”";
         }
 
-        // --- KEY LOGIC ---
+        // --- DECODERS ---
         function decodeHex(hex) { try { let str='';for(let i=0;i<hex.length;i+=2)str+=String.fromCharCode(parseInt(hex.substr(i,2),16));return str.split("").reverse().join(""); } catch(e){return null;} }
         function decodeBase64(str) { try { let d=atob(str); if(d.includes("AIza")||d.includes("gsk_")||d.includes("hf_"))return d; return d.split("").reverse().join(""); } catch(e){return null;} }
         function handleSmartKeyInput(input) {
@@ -444,7 +460,7 @@
         function updateAllStatus() { ['gemini','groq','hf'].forEach(p => { const el = document.getElementById(`status-${p}`); if(USER_KEYS[p]) { el.innerText = "OVERRIDE"; el.className = "text-cyan-400 font-bold"; } else if(SYSTEM_KEYS[p].length > 0) { el.innerText = "ONLINE"; el.className = "text-emerald-400 font-bold"; } else { el.innerText = "OFFLINE"; el.className = "text-red-400 font-bold"; } }); }
         function getKey(p) { if(USER_KEYS[p]) return USER_KEYS[p]; if(SYSTEM_KEYS[p].length > 0) return SYSTEM_KEYS[p][Math.floor(Math.random()*SYSTEM_KEYS[p].length)]; return null; }
 
-        // --- APP UI ---
+        // --- APP LOGIC ---
         const canvas = document.getElementById('drawing-canvas'); const ctx = canvas.getContext('2d', { willReadFrequently: true });
         function resizeCanvas() {
             const wrapper = document.getElementById('canvas-wrapper'); if (wrapper.classList.contains('hidden') || wrapper.offsetWidth === 0) return;
@@ -493,7 +509,7 @@
             addMessage('user', userContent, false);
             chatHistory.push({ role: 'user', content: userContent });
             if(chatHistory.length === 1) saveChat();
-            if(activeController) activeController.abort(); activeController = new AbortController(); const signal = activeController.signal; setTimeout(() => activeController.abort(), 20000); // 20s Timeout
+            if(activeController) activeController.abort(); activeController = new AbortController(); const signal = activeController.signal; setTimeout(() => activeController.abort(), 60000); // 60s
 
             try {
                 if(isImageGen || text.toLowerCase().startsWith("render")) {
@@ -516,38 +532,36 @@
                 
                 if (customId) { model = customId; provider = "CUSTOM"; } else if (model.includes('groq')) provider = "GROQ";
                 document.getElementById('active-model-display').innerText = provider;
+                
+                // Random Activity
+                const activity = ACTIVITIES[currentLang][Math.floor(Math.random() * ACTIVITIES[currentLang].length)];
 
-                let historyPrompt = PROMPTS[currentLang] + "\n\n";
+                // Prompt Injection
+                let historyPrompt = PROMPTS[currentLang].replace("[ACTIVITY]", activity) + "\n\n";
                 const context = chatHistory.slice(-5).filter(m => !m.content.includes("<img")); 
                 context.forEach(msg => { historyPrompt += `${msg.role==='user'?'User':'SilverWolf'}: ${msg.content}\n`; });
                 historyPrompt += `User: ${text}`;
-                let reply = "";
 
-                // GEMINI CALL WITH FALLBACK
+                let reply = "";
+                // GEMINI CALL
                 if (provider.includes("GEMINI") || provider === "CUSTOM") {
                     let success = false;
                     let lastErr = "";
                     const keys = USER_KEYS.gemini ? [USER_KEYS.gemini] : SYSTEM_KEYS.gemini;
                     if (!keys || keys.length === 0) throw new Error("No Gemini Keys found.");
                     
-                    // Fallback Chain: Selected -> Lite -> 3.0 Preview
-                    const fallbackModels = [model, 'gemini-2.5-flash-lite', 'gemini-3-flash-preview'];
-                    
-                    for(let m of fallbackModels) {
-                        if(success) break;
-                        for(let i=0; i < Math.min(keys.length + 1, 3); i++) {
-                            try {
-                                const currentKey = keys[Math.floor(Math.random() * keys.length)];
-                                const parts = [{ text: historyPrompt }];
-                                if(imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
-                                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${currentKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: parts }] }), signal });
-                                const data = await res.json();
-                                if(data.error) throw new Error(data.error.message);
-                                reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                                reply = reply.replace(/^(Silver\s*Wolf|AI|Assistant):\s*/i, "");
-                                success = true; break; 
-                            } catch(e) { lastErr = e.message; }
-                        }
+                    for(let i=0; i < Math.min(keys.length + 1, 3); i++) {
+                        try {
+                            const currentKey = keys[Math.floor(Math.random() * keys.length)];
+                            const parts = [{ text: historyPrompt }];
+                            if(imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
+                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${currentKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: parts }] }), signal });
+                            const data = await res.json();
+                            if(data.error) throw new Error(data.error.message);
+                            reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                            reply = reply.replace(/^(Silver\s*Wolf|AI|Assistant):\s*/i, "");
+                            success = true; break; 
+                        } catch(e) { lastErr = e.message; }
                     }
                     if(!success) throw new Error(lastErr);
                 }
@@ -563,7 +577,7 @@
 
                 chatHistory.push({ role: 'assistant', content: reply }); saveChat(); addMessage('assistant', reply, true);
             } catch(e) {
-                let msg = e.message; if(e.name === 'AbortError') msg = "Loading failed, please retry (Timeout 20s).";
+                let msg = e.message; if(e.name === 'AbortError') msg = "Lag detected (Timeout). Try again.";
                 if (msg.includes("400") && msg.includes("key")) { msg += " (Key Rejected)"; }
                 addMessage('assistant', `⚠️ **Error:** ${msg}`, true);
             } finally {
@@ -578,11 +592,12 @@
             if (isMarkdown) { content = content.replace(/<think>([\s\S]*?)<\/think>/g, '<div class="mb-2 p-2 bg-indigo-950/50 border-l-2 border-indigo-500 text-indigo-300 text-[10px] font-mono rounded-r opacity-70">$1</div>'); content = marked.parse(content); }
             const bg = role === 'user' ? 'bg-purple-600 text-white' : 'bg-slate-900 text-slate-200 border border-slate-800';
             div.innerHTML = `<div class="${bg} max-w-[90%] md:max-w-2xl rounded-2xl ${role==='user'?'rounded-tr-none':'rounded-tl-none'} px-5 py-3 shadow-lg overflow-hidden"><div class="prose prose-invert prose-sm max-w-none leading-relaxed font-sans">${content}</div></div>`;
-            const box = document.getElementById('chat-container'); box.appendChild(div);
+            const box = document.getElementById('chat-container'); 
+            box.appendChild(div);
             if(isMarkdown) { const el = div.querySelector('.prose'); Prism.highlightAllUnder(el); renderMathInElement(el, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] }); }
-            requestAnimationFrame(() => {
-                box.scrollTop = box.scrollHeight + 500; // Force scroll to very bottom
-            });
+            
+            // Force scroll to absolute bottom
+            setTimeout(() => { box.scrollTop = box.scrollHeight + 1000; }, 50);
         }
     </script>
 </body>
