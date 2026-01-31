@@ -20,43 +20,76 @@
         /* Modern Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 10px; } /* Purple scrollbar */
+        ::-webkit-scrollbar-thumb { background: #6b21a8; border-radius: 10px; }
         
-        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(139, 92, 246, 0.1); }
+        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(168, 85, 247, 0.1); }
         .msg-enter { animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        #drawing-canvas { cursor: crosshair; touch-action: none; background: #0f172a; border-radius: 8px; border: 1px solid #334155; }
-        .tool-active { background: rgba(139, 92, 246, 0.2); border-color: rgba(139, 92, 246, 0.8); color: #c4b5fd; }
+        #drawing-canvas { cursor: crosshair; touch-action: none; background: #020617; border-radius: 8px; border: 1px solid #334155; }
+        .tool-active { background: rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.8); color: #d8b4fe; }
         
         body { height: 100vh; width: 100vw; overflow: hidden; background-color: #020617; }
         main { height: 100%; display: flex; flex-direction: column; }
+        
+        /* Tab Styling */
+        .tab-btn { border-bottom: 2px solid transparent; opacity: 0.6; }
+        .tab-btn.active { border-bottom: 2px solid #a855f7; opacity: 1; color: #a855f7; }
+        
+        .chat-item:hover .delete-btn { opacity: 1; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 flex font-sans antialiased selection:bg-purple-500/30">
 
     <!-- SIDEBAR -->
-    <aside class="w-80 bg-slate-900/50 border-r border-slate-800 flex flex-col hidden md:flex z-30 shadow-2xl shrink-0 backdrop-blur-md">
-        <div class="p-6 border-b border-slate-800">
+    <aside class="w-80 bg-slate-900/80 border-r border-slate-800 flex flex-col hidden md:flex z-30 shadow-2xl shrink-0 backdrop-blur-md">
+        <div class="p-5 border-b border-slate-800">
             <h1 class="text-2xl font-black bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent flex items-center gap-2 tracking-tight">
                 SilverWolf II
             </h1>
-            <p class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Editing</p>
+            <p class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Code V3</p>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-4 space-y-6">
-            <!-- Manual Keys -->
+        <!-- TABS -->
+        <div class="flex border-b border-slate-800 bg-slate-900/50">
+            <button onclick="switchTab('history')" id="tab-btn-history" class="flex-1 py-3 text-[10px] font-bold tracking-wider tab-btn active">SESSIONS</button>
+            <button onclick="switchTab('settings')" id="tab-btn-settings" class="flex-1 py-3 text-[10px] font-bold tracking-wider tab-btn">SYSTEM</button>
+        </div>
+
+        <!-- PANEL: HISTORY -->
+        <div id="panel-history" class="flex-1 overflow-y-auto p-3 space-y-2">
+            <button onclick="createNewChat()" class="w-full py-2.5 px-3 bg-purple-600 hover:bg-purple-500 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-900/20">
+                <i data-lucide="plus" class="w-4 h-4"></i> NEW GAME
+            </button>
+            <div id="history-list" class="space-y-1 mt-2">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- PANEL: SETTINGS -->
+        <div id="panel-settings" class="flex-1 overflow-y-auto p-4 space-y-6 hidden">
+            
+            <!-- Language -->
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Audio Protocol (Language)</label>
+                <div class="grid grid-cols-2 gap-2 bg-slate-950 p-1 rounded-lg border border-slate-800">
+                    <button onclick="setLanguage('en')" id="lang-en" class="py-1.5 text-xs rounded font-bold bg-purple-600 text-white transition-all">English</button>
+                    <button onclick="setLanguage('zh')" id="lang-zh" class="py-1.5 text-xs rounded font-bold text-slate-400 hover:text-white transition-all">中文 (CN)</button>
+                </div>
+            </div>
+
+            <!-- Keys -->
             <div class="p-3 bg-purple-900/10 border border-purple-500/20 rounded-lg">
                 <label class="text-[10px] font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2 mb-2">
-                    <i data-lucide="key" class="w-3 h-3"></i> Access Codes
+                    <i data-lucide="key" class="w-3 h-3"></i> Manual Override
                 </label>
                 <div class="relative">
-                    <input type="password" id="smart-key-input" placeholder="Paste API Key..." 
-                           class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-white focus:border-purple-500 outline-none transition-colors font-mono"
+                    <input type="password" id="smart-key-input" placeholder="Paste Key..." 
+                           class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-white focus:border-purple-500 outline-none font-mono"
                            oninput="handleSmartKeyInput(this)">
                     <div id="key-validation-icon" class="absolute right-2 top-2"></div>
                 </div>
-                <div id="key-type-badge" class="mt-2 text-[10px] font-mono text-slate-500 h-4">Awaiting Input...</div>
+                <div id="key-type-badge" class="mt-2 text-[10px] font-mono text-slate-500 h-4">No input signal...</div>
             </div>
 
             <!-- Model Selection -->
@@ -64,47 +97,29 @@
                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
                     <i data-lucide="cpu" class="w-3 h-3"></i> Core Engine
                 </label>
-                <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-cyan-500 transition-colors cursor-pointer text-slate-200 shadow-sm font-mono">
-                    <option value="auto" selected>✨ Auto-Hack (Smart)</option>
-                    <optgroup label="Google Gemini">
-                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Newest)</option>
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Stable)</option>
-                        <option value="gemini-1.5-pro">Gemini 1.5 Pro (Logic)</option>
+                <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-cyan-500 text-slate-200 font-mono cursor-pointer">
+                    <option value="auto" selected>✨ Auto-Select (Recommended)</option>
+                    <optgroup label="Gemini (Latest)">
+                        <option value="gemini-3.0-flash-preview">Gemini 3.0 Flash (Preview)</option>
+                        <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                        <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
                     </optgroup>
                     <optgroup label="DeepSeek & Llama">
-                        <option value="groq-deepseek">DeepSeek R1 (Math/Code)</option>
-                        <option value="groq-llama">Llama 3 (General)</option>
+                        <option value="groq-deepseek">DeepSeek R1 (Via Groq)</option>
                     </optgroup>
                 </select>
-                <div class="p-3 bg-cyan-950/20 border border-cyan-500/20 rounded-lg">
-                    <p class="text-[9px] text-cyan-400 font-bold mb-1 uppercase">Route Optimization</p>
-                    <ul class="text-[9px] text-slate-400 space-y-1 list-disc pl-3 font-mono">
-                        <li>Visuals &rarr; Gemini 2.0</li>
-                        <li>Logic/Math &rarr; DeepSeek R1</li>
-                        <li>Art Generation &rarr; Flux Schnell</li>
-                    </ul>
-                </div>
             </div>
 
-            <!-- Key Status Indicator -->
+            <!-- Status -->
             <div class="p-3 bg-slate-800/20 rounded-lg border border-slate-700/50">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase">System Status</span>
-                    <button onclick="clearUserKeys()" class="text-[9px] text-red-400 hover:text-red-300 underline decoration-dotted">Reset</button>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Link Status</span>
+                    <button onclick="clearUserKeys()" class="text-[9px] text-red-400 hover:text-red-300 underline decoration-dotted">Purge</button>
                 </div>
-                <div id="key-status-list" class="space-y-1.5">
-                    <div class="flex justify-between text-[10px] items-center font-mono">
-                        <span class="text-slate-500">Gemini:</span> 
-                        <span id="status-gemini" class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-500 text-[9px]">...</span>
-                    </div>
-                    <div class="flex justify-between text-[10px] items-center font-mono">
-                        <span class="text-slate-500">Groq:</span> 
-                        <span id="status-groq" class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-500 text-[9px]">...</span>
-                    </div>
-                    <div class="flex justify-between text-[10px] items-center font-mono">
-                        <span class="text-slate-500">HF:</span> 
-                        <span id="status-hf" class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-500 text-[9px]">...</span>
-                    </div>
+                <div id="key-status-list" class="space-y-1.5 font-mono text-[10px]">
+                    <div class="flex justify-between"><span class="text-slate-500">Gemini:</span> <span id="status-gemini" class="text-slate-600">...</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Groq:</span> <span id="status-groq" class="text-slate-600">...</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">HF:</span> <span id="status-hf" class="text-slate-600">...</span></div>
                 </div>
             </div>
         </div>
@@ -130,7 +145,7 @@
                     </div>
                 </div>
                 <h2 class="text-4xl font-black text-white mb-2 tracking-tight">SilverWolf II</h2>
-                <p class="text-slate-400 max-w-sm text-sm mb-8 font-mono">"Time to game. API keys loaded. What's the mission?"</p>
+                <p id="welcome-text" class="text-slate-400 max-w-sm text-sm mb-8 font-mono">"System updated. Gemini 2.5/3.0 loaded. Let's game."</p>
                 
                 <div class="grid grid-cols-2 gap-3 w-full max-w-md">
                     <button onclick="fillPrompt('Explain quantum physics like a game mechanic')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-purple-500/50">
@@ -181,7 +196,7 @@
                         
                         <!-- Gen Switch -->
                         <div class="flex items-center gap-3 pl-3 border-l border-white/5">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Image Gen</span>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Flux Gen</span>
                             <button onclick="toggleImageMode()" id="img-gen-btn" class="w-9 h-5 rounded-full bg-slate-800 relative transition-all border border-slate-700">
                                 <div class="w-3 h-3 bg-slate-400 rounded-full absolute top-1 left-1 transition-all shadow-sm" id="img-gen-knob"></div>
                             </button>
@@ -220,7 +235,7 @@
                     <div class="h-10 flex justify-between items-center px-3 bg-slate-900/30 border-t border-white/5">
                         <div class="text-[10px] text-slate-500 font-mono flex items-center gap-2">
                              <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                             <span id="active-model-display">SYSTEM READY</span>
+                             <span id="active-model-display">GEMINI 2.5</span>
                         </div>
                         
                         <div class="flex items-center gap-3">
@@ -236,7 +251,7 @@
                 </div>
                 
                 <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex justify-center gap-4 opacity-50">
-                    <span>Gemini 2.0 • DeepSeek R1 • Flux</span>
+                    <span>Gemini 3.0 • DeepSeek R1 • Flux</span>
                     <span>© Eric</span>
                     <span>Willetton SHS</span>
                 </div>
@@ -245,72 +260,158 @@
     </main>
 
     <script>
+        // --- GLOBAL STATE ---
         let SYSTEM_KEYS = { gemini: [], groq: [], hf: [] };
         let USER_KEYS = { gemini: null, groq: null, hf: null };
+        let savedChats = JSON.parse(localStorage.getItem('eric_chats_v2') || '[]');
+        let currentChatId = null;
+        let chatHistory = [];
+        let isDrawing = false; 
+        let isImageGen = false;
+        let timerInterval, startTime; 
+        let currentTool = 'brush';
+        let currentLang = 'en';
         let activeController = null;
 
-        // --- SMART DECODERS ---
-        function decodeHex(hex) {
-            try {
-                let str = '';
-                for (let i = 0; i < hex.length; i += 2) str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
-                return str.split("").reverse().join("");
-            } catch (e) { return null; }
-        }
-        function decodeBase64(str) {
-            try {
-                let decoded = atob(str);
-                if (decoded.includes("AIza") || decoded.includes("gsk_") || decoded.includes("hf_")) return decoded;
-                return decoded.split("").reverse().join("");
-            } catch(e) { return null; }
+        // --- PROMPTS ---
+        const PROMPTS = {
+            en: `You are Silver Wolf from Honkai: Star Rail. 
+            Role: Super Hacker & Gamer.
+            Tone: Casual, confident, short, cool. Use gaming/hacking terms (AFK, spawn, render, glitch, quest).
+            Task: Assist the "Trailblazer" (user).
+            Format: Markdown. Math in LaTeX ($$). Code in blocks.`,
+            
+            zh: `你是银狼 (Silver Wolf)。
+            身份：星核猎手，骇客，顶级玩家。
+            语气：慵懒，自信，酷。说话简短。多用游戏术语（如：刷新，副本，掉落，BUG，带飞）。
+            任务：协助“开拓者”。
+            格式：Markdown。数学用$$。代码用代码块。`
+        };
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            lucide.createIcons();
+            loadKeys();
+            loadChatList();
+            createNewChat(); 
+        };
+
+        // --- SESSION MANAGER ---
+        function createNewChat() {
+            currentChatId = Date.now();
+            chatHistory = [];
+            document.getElementById('chat-container').innerHTML = "";
+            document.getElementById('welcome-screen').style.display = 'flex';
+            updateChatListUI();
         }
 
-        // --- KEY MANAGEMENT ---
+        function saveChat() {
+            if (!currentChatId || chatHistory.length === 0) return;
+            const title = chatHistory[0].content.substring(0, 20) + (chatHistory[0].content.length > 20 ? "..." : "");
+            const chatData = { id: currentChatId, title, history: chatHistory, timestamp: Date.now() };
+            
+            const idx = savedChats.findIndex(c => c.id === currentChatId);
+            if(idx >= 0) savedChats[idx] = chatData;
+            else savedChats.unshift(chatData);
+            
+            localStorage.setItem('eric_chats_v2', JSON.stringify(savedChats));
+            updateChatListUI();
+        }
+
+        function loadChat(id) {
+            const chat = savedChats.find(c => c.id === id);
+            if(!chat) return;
+            currentChatId = id;
+            chatHistory = chat.history;
+            
+            // Render
+            const container = document.getElementById('chat-container');
+            container.innerHTML = "";
+            document.getElementById('welcome-screen').style.display = 'none';
+            chatHistory.forEach(msg => {
+                addMessage(msg.role === 'user' ? 'user' : 'assistant', msg.content, false);
+            });
+            switchTab('history');
+        }
+
+        function deleteChat(id, e) {
+            e.stopPropagation();
+            savedChats = savedChats.filter(c => c.id !== id);
+            localStorage.setItem('eric_chats_v2', JSON.stringify(savedChats));
+            if(currentChatId === id) createNewChat();
+            updateChatListUI();
+        }
+
+        function updateChatListUI() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = "";
+            savedChats.forEach(chat => {
+                const div = document.createElement('div');
+                div.className = `p-2 rounded-lg cursor-pointer flex justify-between items-center group transition-colors chat-item ${chat.id === currentChatId ? 'bg-purple-900/30 border border-purple-500/30' : 'hover:bg-slate-800'}`;
+                div.onclick = () => loadChat(chat.id);
+                div.innerHTML = `
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <i data-lucide="message-square" class="w-3 h-3 ${chat.id === currentChatId ? 'text-purple-400' : 'text-slate-500'}"></i>
+                        <span class="text-xs truncate ${chat.id === currentChatId ? 'text-purple-200' : 'text-slate-400'}">${chat.title}</span>
+                    </div>
+                    <button onclick="deleteChat(${chat.id}, event)" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 delete-btn"><i data-lucide="trash" class="w-3 h-3"></i></button>
+                `;
+                list.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        function switchTab(tab) {
+            document.getElementById('tab-btn-history').classList.remove('active');
+            document.getElementById('tab-btn-settings').classList.remove('active');
+            document.getElementById('panel-history').classList.add('hidden');
+            document.getElementById('panel-settings').classList.add('hidden');
+            document.getElementById(`tab-btn-${tab}`).classList.add('active');
+            document.getElementById(`panel-${tab}`).classList.remove('hidden');
+        }
+        
+        function loadChatList() { updateChatListUI(); } // Alias
+
+        // --- LANGUAGE ---
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('lang-en').className = `py-1.5 text-xs rounded font-bold transition-all ${lang==='en'?'bg-purple-600 text-white':'text-slate-400 hover:text-white'}`;
+            document.getElementById('lang-zh').className = `py-1.5 text-xs rounded font-bold transition-all ${lang==='zh'?'bg-purple-600 text-white':'text-slate-400 hover:text-white'}`;
+            document.getElementById('welcome-text').innerText = lang === 'zh' ? "“游戏开始了。API已连接。任务是什么？”" : "“Time to game. API keys loaded. What's the mission?”";
+        }
+
+        // --- DECODERS ---
+        function decodeHex(hex) { try { let str='';for(let i=0;i<hex.length;i+=2)str+=String.fromCharCode(parseInt(hex.substr(i,2),16));return str.split("").reverse().join(""); } catch(e){return null;} }
+        function decodeBase64(str) { try { let d=atob(str); if(d.includes("AIza")||d.includes("gsk_")||d.includes("hf_"))return d; return d.split("").reverse().join(""); } catch(e){return null;} }
+
         function handleSmartKeyInput(input) {
             const val = input.value.trim();
             const badge = document.getElementById('key-type-badge');
             const icon = document.getElementById('key-validation-icon');
-            
-            const isGemini = val.startsWith("AIza");
-            const isGroq = val.startsWith("gsk_");
-            const isHF = val.startsWith("hf_");
+            let type = "";
+            if (val.startsWith("AIza")) type="gemini";
+            else if (val.startsWith("gsk_")) type="groq";
+            else if (val.startsWith("hf_")) type="hf";
 
-            if (isGemini) {
-                USER_KEYS.gemini = val;
-                badge.innerText = "Gemini Access Granted";
-                badge.className = "mt-2 text-[10px] font-mono text-cyan-400 font-bold";
-                icon.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-cyan-500"></i>`;
-            } else if (isGroq) {
-                USER_KEYS.groq = val;
-                badge.innerText = "Groq Access Granted";
-                badge.className = "mt-2 text-[10px] font-mono text-orange-400 font-bold";
-                icon.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-orange-500"></i>`;
-            } else if (isHF) {
-                USER_KEYS.hf = val;
-                badge.innerText = "HF Access Granted";
-                badge.className = "mt-2 text-[10px] font-mono text-yellow-400 font-bold";
-                icon.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-yellow-500"></i>`;
-            } else if (val.length > 5) {
-                badge.innerText = "Invalid Protocol";
-                badge.className = "mt-2 text-[10px] font-mono text-red-400 font-bold";
-                icon.innerHTML = `<i data-lucide="alert-octagon" class="w-4 h-4 text-red-500"></i>`;
+            if (type) {
+                USER_KEYS[type] = val;
+                badge.innerText = `${type.toUpperCase()} Key Override Active`;
+                badge.className = "mt-2 text-[10px] font-mono text-cyan-400";
+                icon.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-cyan-500"></i>`;
+                localStorage.setItem('eric_user_keys', JSON.stringify(USER_KEYS));
+                updateAllStatus();
             } else {
-                badge.innerText = "Awaiting Input...";
-                badge.className = "mt-2 text-[10px] font-mono text-slate-500";
+                badge.innerText = "Unknown Key Format";
+                badge.className = "mt-2 text-[10px] font-mono text-red-400";
                 icon.innerHTML = "";
             }
-            
             lucide.createIcons();
-            localStorage.setItem('eric_user_keys', JSON.stringify(USER_KEYS));
-            updateAllStatus();
         }
 
         function clearUserKeys() {
-            USER_KEYS = { gemini: null, groq: null, hf: null };
+            USER_KEYS = { gemini:null, groq:null, hf:null };
             localStorage.removeItem('eric_user_keys');
             document.getElementById('smart-key-input').value = "";
-            document.getElementById('key-type-badge').innerText = "Awaiting Input...";
-            document.getElementById('key-validation-icon').innerHTML = "";
             updateAllStatus();
         }
 
@@ -319,294 +420,244 @@
             if (saved) USER_KEYS = JSON.parse(saved);
             try {
                 const ts = new Date().getTime();
-                const [geminiRes, groqRes, hfRes] = await Promise.all([
-                    fetch(`GE.txt?v=${ts}`, { cache: "no-store" }), 
-                    fetch(`GR.txt?v=${ts}`, { cache: "no-store" }), 
-                    fetch(`HU.txt?v=${ts}`, { cache: "no-store" })
-                ]);
-                const processKeys = async (res, prefix) => {
+                const [g, gr, h] = await Promise.all([fetch(`GE.txt?v=${ts}`), fetch(`GR.txt?v=${ts}`), fetch(`HU.txt?v=${ts}`)]);
+                
+                const parse = async (res, prefix) => {
                     if(!res.ok) return [];
-                    const text = await res.text();
-                    const lines = text.split('\n').map(k => k.trim()).filter(k => k.length > 5);
-                    let validKeys = [];
-                    for(let line of lines) {
-                        if (line.startsWith(prefix)) { validKeys.push(line); continue; }
-                        let k1 = decodeHex(line); if(k1 && k1.startsWith(prefix)) { validKeys.push(k1); continue; }
-                        let k2 = decodeBase64(line); if(k2 && k2.startsWith(prefix)) { validKeys.push(k2); continue; }
-                    }
-                    return validKeys;
+                    const txt = await res.text();
+                    return txt.split('\n').map(k=>k.trim()).filter(k=>k.length>5).map(k => {
+                        if(k.startsWith(prefix)) return k;
+                        let d1 = decodeHex(k); if(d1 && d1.startsWith(prefix)) return d1;
+                        let d2 = decodeBase64(k); if(d2 && d2.startsWith(prefix)) return d2;
+                        return null;
+                    }).filter(k=>k);
                 };
-                SYSTEM_KEYS.gemini = await processKeys(geminiRes, "AIza");
-                SYSTEM_KEYS.groq = await processKeys(groqRes, "gsk_");
-                SYSTEM_KEYS.hf = await processKeys(hfRes, "hf_");
+
+                SYSTEM_KEYS.gemini = await parse(g, "AIza");
+                SYSTEM_KEYS.groq = await parse(gr, "gsk_");
+                SYSTEM_KEYS.hf = await parse(h, "hf_");
                 updateAllStatus();
-            } catch (error) { console.error("System Key Load Error", error); }
+            } catch(e) { console.error(e); }
         }
 
         function updateAllStatus() {
-            updateStatus('gemini'); updateStatus('groq'); updateStatus('hf');
-        }
-        function updateStatus(provider) {
-            const el = document.getElementById(`status-${provider}`);
-            if (USER_KEYS[provider]) {
-                el.innerText = "OVERRIDE"; el.className = "px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold";
-            } else if (SYSTEM_KEYS[provider] && SYSTEM_KEYS[provider].length > 0) {
-                el.innerText = "ONLINE"; el.className = "px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold";
-            } else {
-                el.innerText = "OFFLINE"; el.className = "px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 font-bold";
-            }
-        }
-        function getKey(provider) {
-            if (USER_KEYS[provider]) return USER_KEYS[provider];
-            const keys = SYSTEM_KEYS[provider];
-            if (!keys || keys.length === 0) return null;
-            return keys[Math.floor(Math.random() * keys.length)];
+            ['gemini','groq','hf'].forEach(p => {
+                const el = document.getElementById(`status-${p}`);
+                if(USER_KEYS[p]) { el.innerText = "OVERRIDE"; el.className = "text-cyan-400 font-bold"; }
+                else if(SYSTEM_KEYS[p].length > 0) { el.innerText = "ONLINE"; el.className = "text-emerald-400 font-bold"; }
+                else { el.innerText = "OFFLINE"; el.className = "text-red-400 font-bold"; }
+            });
         }
 
-        // --- CORE APP LOGIC ---
-        let chatHistory = [];
-        let isDrawing = false; let isImageGen = false;
-        let timerInterval, startTime; let currentTool = 'brush';
-        
-        // SILVER WOLF PERSONA PROMPT
-        const SYS_PROMPT = `You are Silver Wolf from Honkai: Star Rail. 
-        Personality: Casual, confident, hacker, gamer. You speak in short, cool sentences. You often use gaming terminology (e.g., "spawn", "render", "lag", "glitch", "carry").
-        Tone: Slightly bored but highly competent. Not robotic.
-        Capabilities: You can see drawings. If the user draws something, comment on it like a critique or a guess, don't just describe it. 
-        Context: You are helping the user (the "Trailblazer" or "Player") with tasks.
-        Format: Use Markdown. Math in LaTeX ($$). Coding in blocks.`;
+        function getKey(p) {
+            if(USER_KEYS[p]) return USER_KEYS[p];
+            if(SYSTEM_KEYS[p].length > 0) return SYSTEM_KEYS[p][Math.floor(Math.random()*SYSTEM_KEYS[p].length)];
+            return null;
+        }
 
-        // Canvas
+        // --- APP LOGIC ---
         const canvas = document.getElementById('drawing-canvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        let painting = false;
+        
         function resizeCanvas() {
-            const container = document.getElementById('canvas-container'); const rect = container.getBoundingClientRect();
+            const rect = canvas.parentElement.getBoundingClientRect();
             if (canvas.width !== rect.width || canvas.height !== rect.height) {
-                const saved = canvas.toDataURL(); canvas.width = rect.width; canvas.height = rect.height;
-                const img = new Image(); img.onload = () => ctx.drawImage(img, 0, 0); img.src = saved; setTool(currentTool);
+                const s = canvas.toDataURL(); canvas.width = rect.width; canvas.height = rect.height;
+                const i = new Image(); i.onload=()=>ctx.drawImage(i,0,0); i.src=s;
+                setTool(currentTool);
             }
         }
         function setTool(tool) {
-            currentTool = tool; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-            const bBtn = document.getElementById('tool-brush'); const eBtn = document.getElementById('tool-eraser');
-            if (tool === 'brush') {
-                bBtn.className = "p-2 rounded tool-active"; eBtn.className = "p-2 rounded text-slate-500 hover:bg-slate-800"; ctx.globalCompositeOperation = 'source-over';
-            } else {
-                eBtn.className = "p-2 rounded tool-active"; bBtn.className = "p-2 rounded text-slate-500 hover:bg-slate-800"; ctx.globalCompositeOperation = 'destination-out';
-            }
+            currentTool = tool; ctx.lineCap='round'; ctx.lineJoin='round';
+            const b = document.getElementById('tool-brush'); const e = document.getElementById('tool-eraser');
+            if(tool==='brush'){ b.classList.add('tool-active'); e.classList.remove('tool-active'); ctx.globalCompositeOperation='source-over'; }
+            else { e.classList.add('tool-active'); b.classList.remove('tool-active'); ctx.globalCompositeOperation='destination-out'; }
         }
+        
+        // Canvas Events
+        let painting = false;
         function draw(e) {
-            if (!painting) return; e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left; const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-            ctx.lineWidth = document.getElementById('brush-size').value * (currentTool === 'eraser' ? 4 : 1);
-            if(currentTool === 'brush') ctx.strokeStyle = document.getElementById('color-picker').value;
-            ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
+            if(!painting) return; e.preventDefault();
+            const r = canvas.getBoundingClientRect();
+            const x = (e.touches?e.touches[0].clientX:e.clientX)-r.left;
+            const y = (e.touches?e.touches[0].clientY:e.clientY)-r.top;
+            ctx.lineWidth = document.getElementById('brush-size').value * (currentTool==='eraser'?4:1);
+            if(currentTool==='brush') ctx.strokeStyle = document.getElementById('color-picker').value;
+            ctx.lineTo(x,y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x,y);
         }
-        canvas.addEventListener('mousedown', (e) => { painting = true; draw(e); }); canvas.addEventListener('mouseup', () => { painting = false; ctx.beginPath(); });
-        canvas.addEventListener('mousemove', draw); canvas.addEventListener('touchstart', (e) => { painting = true; draw(e); });
-        canvas.addEventListener('touchend', () => { painting = false; ctx.beginPath(); }); canvas.addEventListener('touchmove', draw);
-        function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+        canvas.addEventListener('mousedown',()=>{painting=true;draw(event)});
+        canvas.addEventListener('mouseup',()=>{painting=false;ctx.beginPath()});
+        canvas.addEventListener('mousemove',draw);
+        canvas.addEventListener('touchstart',(e)=>{painting=true;draw(e)});
+        canvas.addEventListener('touchend',()=>{painting=false;ctx.beginPath()});
+        canvas.addEventListener('touchmove',draw);
+        function clearCanvas() { ctx.clearRect(0,0,canvas.width,canvas.height); }
 
-        // UI
+        // UI Controls
         function setMode(mode) {
-            const textBox = document.getElementById('user-input'); const canvasBox = document.getElementById('canvas-container');
-            const tabT = document.getElementById('tab-text'); const tabD = document.getElementById('tab-draw');
-            if (mode === 'draw') {
-                isDrawing = true; textBox.classList.add('hidden'); canvasBox.classList.remove('hidden');
-                tabD.className = "px-3 py-1.5 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 bg-purple-600 text-white shadow shadow-purple-500/20";
-                tabT.className = "px-3 py-1.5 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-white/5";
-                setTimeout(resizeCanvas, 50);
-            } else {
-                isDrawing = false; textBox.classList.remove('hidden'); canvasBox.classList.add('hidden');
-                tabT.className = "px-3 py-1.5 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 bg-purple-600 text-white shadow shadow-purple-500/20";
-                tabD.className = "px-3 py-1.5 rounded text-[10px] font-bold uppercase transition-all flex items-center gap-2 text-slate-400 hover:text-white hover:bg-white/5";
-            }
+            isDrawing = mode==='draw';
+            document.getElementById('user-input').classList.toggle('hidden', isDrawing);
+            document.getElementById('canvas-container').classList.toggle('hidden', !isDrawing);
+            document.getElementById('tab-draw').classList.toggle('bg-purple-600', isDrawing);
+            document.getElementById('tab-draw').classList.toggle('text-white', isDrawing);
+            document.getElementById('tab-text').classList.toggle('bg-purple-600', !isDrawing);
+            document.getElementById('tab-text').classList.toggle('text-white', !isDrawing);
+            if(isDrawing) setTimeout(resizeCanvas, 50);
         }
         function toggleImageMode() {
             isImageGen = !isImageGen;
-            const knob = document.getElementById('img-gen-knob'); const btn = document.getElementById('img-gen-btn'); const input = document.getElementById('user-input');
-            if (isImageGen) {
-                knob.style.transform = "translateX(16px)"; knob.classList.replace('bg-slate-400', 'bg-white');
-                btn.classList.replace('bg-slate-800', 'bg-cyan-600'); btn.classList.replace('border-slate-700', 'border-cyan-500');
-                input.placeholder = "Describe the asset to render..."; setMode('text');
-            } else {
-                knob.style.transform = "translateX(0)"; knob.classList.replace('bg-white', 'bg-slate-400');
-                btn.classList.replace('bg-cyan-600', 'bg-slate-800'); btn.classList.replace('border-cyan-500', 'border-slate-700');
-                input.placeholder = "Enter command...";
-            }
+            document.getElementById('img-gen-knob').style.transform = isImageGen ? "translateX(16px)" : "translateX(0)";
+            document.getElementById('img-gen-btn').classList.toggle('bg-cyan-600', isImageGen);
+            if(isImageGen) { setMode('text'); document.getElementById('user-input').placeholder = "Describe asset to render..."; }
+            else { document.getElementById('user-input').placeholder = "Enter command..."; }
         }
         function fillPrompt(txt) { document.getElementById('user-input').value = txt; handleSend(); }
-        function setLoadState(active) {
-            const pill = document.getElementById('loading-pill'); const text = document.getElementById('loading-text'); const timeDisplay = document.getElementById('timer-display');
-            if (active) {
-                pill.classList.remove('hidden'); text.innerText = "Compiling..."; startTime = Date.now();
-                clearInterval(timerInterval); timerInterval = setInterval(() => {
-                    const elapsed = (Date.now() - startTime) / 1000; timeDisplay.innerText = elapsed.toFixed(1) + "s";
-                    if (elapsed > 2) text.innerText = "Accessing Neural Cloud..."; if (elapsed > 8) text.innerText = "Rendering...";
+        function setLoadState(a) {
+            document.getElementById('loading-pill').classList.toggle('hidden', !a);
+            if(a) {
+                startTime = Date.now();
+                clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    const elapsed = (Date.now()-startTime)/1000;
+                    document.getElementById('timer-display').innerText = elapsed.toFixed(1)+'s';
                 }, 100);
-            } else { pill.classList.add('hidden'); clearInterval(timerInterval); }
+            } else clearInterval(timerInterval);
         }
-
         function stopGeneration() {
-            if (activeController) {
-                activeController.abort(); activeController = null; setLoadState(false);
-                document.getElementById('send-btn').disabled = false;
-                addMessage('assistant', '⚠️ Process terminated by user.');
-            }
+            if(activeController) { activeController.abort(); activeController=null; setLoadState(false); document.getElementById('send-btn').disabled=false; addMessage('assistant', '⚠️ Terminated.'); }
         }
 
-        // Logic
+        // --- HANDLE SEND ---
         async function handleSend() {
             const input = document.getElementById('user-input');
             const text = input.value.trim();
-            const btn = document.getElementById('send-btn');
-            const activeBadge = document.getElementById('active-model-display');
-            
             let imgData = null;
-            if (isDrawing) {
-                const temp = document.createElement('canvas'); temp.width = canvas.width; temp.height = canvas.height;
-                if (canvas.toDataURL() !== temp.toDataURL()) imgData = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+            
+            if(isDrawing) {
+                const t = document.createElement('canvas'); t.width=canvas.width; t.height=canvas.height;
+                if(canvas.toDataURL() !== t.toDataURL()) imgData = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
             }
-            if (!text && !imgData) return;
+            if(!text && !imgData) return;
 
             document.getElementById('welcome-screen').style.display = 'none';
-            input.value = ''; btn.disabled = true; setLoadState(true);
+            input.value = ''; document.getElementById('send-btn').disabled = true; setLoadState(true);
 
-            if (imgData) {
-                addMessage('user', `<img src="data:image/jpeg;base64,${imgData}" class="max-w-[200px] rounded border border-purple-500/50 mb-2 bg-slate-900 block"> ${text || "Analyze this asset."}`);
-                clearCanvas();
-            } else { addMessage('user', text); }
-
-            if (activeController) activeController.abort();
+            // Add User Message
+            const userContent = imgData ? `<img src="data:image/jpeg;base64,${imgData}" class="max-w-[200px] rounded border border-purple-500/50 mb-2 bg-slate-900 block"> ${text||"Analyze."}` : text;
+            addMessage('user', userContent, false);
+            chatHistory.push({ role: 'user', content: userContent });
+            
+            // Abort Controller
+            if(activeController) activeController.abort();
             activeController = new AbortController();
             const signal = activeController.signal;
-            const timeoutId = setTimeout(() => activeController.abort(), 45000); 
+            setTimeout(() => activeController.abort(), 60000); // 60s timeout
 
             try {
-                // IMAGE GEN (Flux Schnell)
-                if (isImageGen || text.toLowerCase().startsWith("imagine") || text.toLowerCase().startsWith("render")) {
-                    activeBadge.innerText = "FLUX SCHNELL";
-                    const hfKey = getKey('hf');
-                    if(!hfKey) throw new Error("Missing HF Token.");
-                    
+                // FLUX IMAGE GEN
+                if(isImageGen || text.toLowerCase().startsWith("render")) {
+                    const hfKey = getKey('hf'); if(!hfKey) throw new Error("Missing HF Token.");
                     const res = await fetch("https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell", {
                         method: "POST", headers: { "Authorization": `Bearer ${hfKey}`, "Content-Type": "application/json" },
-                        body: JSON.stringify({ inputs: text }),
-                        signal: signal
+                        body: JSON.stringify({ inputs: text }), signal
                     });
-                    if (!res.ok) throw new Error(`Render Error: ${res.status}`);
+                    if(!res.ok) throw new Error(`Flux Error: ${res.status}`);
                     const blob = await res.blob();
                     const url = URL.createObjectURL(blob);
-                    const div = document.createElement('div'); div.className = "msg-enter flex justify-start w-full";
-                    div.innerHTML = `<div class="bg-slate-900 border border-cyan-500/30 p-2 rounded-2xl rounded-tl-none shadow-lg max-w-sm"><p class="text-[9px] text-cyan-400 font-bold mb-2 uppercase">Render Complete</p><img src="${url}" class="rounded-lg w-full"></div>`;
-                    document.getElementById('chat-container').appendChild(div);
-                    return; 
+                    
+                    const imgHtml = `<div class="bg-slate-900 border border-cyan-500/30 p-2 rounded-2xl rounded-tl-none shadow-lg max-w-sm"><img src="${url}" class="rounded-lg w-full"></div>`;
+                    addMessage('assistant', imgHtml, false);
+                    chatHistory.push({ role: 'assistant', content: "[Generated Image]" });
+                    saveChat();
+                    setLoadState(false); document.getElementById('send-btn').disabled = false;
+                    return;
                 }
 
                 // ROUTING
-                let selectedModel = document.getElementById('model-select').value;
+                let model = document.getElementById('model-select').value;
+                let customId = document.getElementById('custom-model-id').value.trim();
                 let provider = "GEMINI";
-                if (selectedModel === 'auto') {
-                    if (imgData) { selectedModel = 'gemini-2.0-flash-exp'; provider = "GEMINI 2.0 (VISION)"; }
-                    else if (text.match(/solve|math|calculate|code|python|script|function|logic/i)) { selectedModel = 'groq-deepseek'; provider = "DEEPSEEK R1"; }
-                    else { selectedModel = 'gemini-2.0-flash-exp'; provider = "GEMINI 2.0"; }
-                } else {
-                    if (selectedModel.includes('groq')) provider = "GROQ";
-                    else if (selectedModel.includes('hf')) provider = "MISTRAL/QWEN";
-                }
-                activeBadge.innerText = provider;
 
-                // Search
-                const webToggle = document.getElementById('web-toggle');
-                let webContext = "";
-                if (webToggle && webToggle.checked && text && !imgData) {
-                    try {
-                        const searchRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://html.duckduckgo.com/html/?q=' + text)}`, { signal });
-                        const json = await searchRes.json();
-                        if (json.contents) {
-                            const parser = new DOMParser();
-                            const doc = parser.parseFromString(json.contents, 'text/html');
-                            const snippets = Array.from(doc.querySelectorAll('.result__body')).slice(0, 3).map(e => e.innerText.trim()).join('\n');
-                            if (snippets) webContext = `[NET_SEARCH]:\n${snippets}\n\n`;
-                        }
-                    } catch(e) {}
+                if (model === 'auto') {
+                    if (imgData) model = 'gemini-2.0-flash-exp'; // Vision Expert
+                    else if (text.match(/solve|math|code|python/i)) { model = 'groq-deepseek'; provider = "DEEPSEEK"; }
+                    else model = 'gemini-2.5-flash'; // New Default
                 }
-
-                let promptText = SYS_PROMPT + "\n\n";
-                if (!text.match(/remember|previous|context/i)) chatHistory = [];
-                chatHistory.push({ role: "user", content: webContext + (text || "Describe this drawing.") });
+                if (customId) { model = customId; provider = "CUSTOM"; }
+                else if (model.includes('groq')) provider = "GROQ";
                 
-                chatHistory.forEach(msg => { promptText += `${msg.role === 'user' ? 'User' : 'SilverWolf'}: ${msg.content}\n`; });
+                document.getElementById('active-model-display').innerText = provider;
+
+                // HISTORY BUILDER
+                let historyPrompt = PROMPTS[currentLang] + "\n\n";
+                // Only send last 5 turns to keep context cheap/fast
+                const context = chatHistory.slice(-5).filter(m => !m.content.includes("<img")); 
+                context.forEach(msg => { historyPrompt += `${msg.role==='user'?'User':'SilverWolf'}: ${msg.content}\n`; });
+                historyPrompt += `User: ${text}`;
 
                 let reply = "";
-                // GEMINI
-                if (selectedModel.includes('gemini')) {
-                    const key = getKey('gemini');
-                    if (!key) throw new Error("Missing Gemini Key.");
-                    const parts = [{ text: promptText }];
-                    if (imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${key}`, {
+                // GEMINI CALL
+                if (provider.includes("GEMINI") || provider === "CUSTOM") {
+                    const key = getKey('gemini'); if(!key) throw new Error("Missing Gemini Key.");
+                    const parts = [{ text: historyPrompt }];
+                    if(imgData) parts.push({ inline_data: { mime_type: "image/jpeg", data: imgData } });
+                    
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: parts }] }),
-                        signal: signal
+                        body: JSON.stringify({ contents: [{ parts: parts }] }), signal
                     });
                     const data = await res.json();
                     if(data.error) throw new Error(data.error.message);
                     reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                } 
-                // GROQ
-                else if (selectedModel.includes('groq')) {
-                    const key = getKey('groq');
-                    if (!key) throw new Error("Missing Groq Key.");
-                    if(imgData) throw new Error("Text-only module. Switch to Gemini.");
+                }
+                // GROQ CALL
+                else if (provider.includes("GROQ") || provider.includes("DEEPSEEK")) {
+                    const key = getKey('groq'); if(!key) throw new Error("Missing Groq Key.");
+                    if(imgData) throw new Error("DeepSeek cannot see images. Switch to Gemini.");
                     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                         method: 'POST', headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ messages: [{role: "system", content: SYS_PROMPT}, ...chatHistory], model: "deepseek-r1-distill-llama-70b", temperature: 0.6 }),
-                        signal: signal
+                        body: JSON.stringify({
+                            messages: [{role:"system", content: PROMPTS[currentLang]}, {role:"user", content: text}],
+                            model: "deepseek-r1-distill-llama-70b", temperature: 0.6
+                        }), signal
                     });
                     const data = await res.json();
                     if(data.error) throw new Error(data.error.message);
                     reply = data.choices?.[0]?.message?.content;
-                } 
-                
-                clearTimeout(timeoutId);
-                chatHistory.push({ role: "assistant", content: reply });
-                addMessage('assistant', reply);
-
-            } catch (err) {
-                clearTimeout(timeoutId);
-                let msg = err.message;
-                if (err.name === 'AbortError') msg = "Connection timed out. Lag detected.";
-                if (msg.includes("401") || msg.includes("not valid")) {
-                    if (USER_KEYS.gemini || USER_KEYS.groq || USER_KEYS.hf) { clearUserKeys(); msg += " (Bad User Key Wiped)"; }
                 }
-                addMessage('assistant', `⚠️ **System Error:** ${msg}`);
+
+                // FINISH
+                chatHistory.push({ role: 'assistant', content: reply });
+                saveChat();
+                addMessage('assistant', reply, true);
+
+            } catch(e) {
+                let msg = e.message;
+                if(e.name === 'AbortError') msg = "Network Timed Out.";
+                addMessage('assistant', `⚠️ **Error:** ${msg}`, true);
             } finally {
-                clearTimeout(timeoutId); setLoadState(false); btn.disabled = false; activeController = null;
+                setLoadState(false); document.getElementById('send-btn').disabled = false; activeController = null;
+                if(imgData) clearCanvas();
             }
         }
 
-        function addMessage(role, text) {
+        function addMessage(role, text, isMarkdown) {
             const div = document.createElement('div');
             div.className = `msg-enter flex ${role==='user'?'justify-end':'justify-start'} w-full`;
             let content = text || "Error: Empty response";
-            if (role === 'assistant') {
+            if (isMarkdown) {
                 content = content.replace(/<think>([\s\S]*?)<\/think>/g, '<div class="mb-2 p-2 bg-indigo-950/50 border-l-2 border-indigo-500 text-indigo-300 text-[10px] font-mono rounded-r opacity-70">$1</div>');
                 content = marked.parse(content);
             }
             const bg = role === 'user' ? 'bg-purple-600 text-white' : 'bg-slate-900 text-slate-200 border border-slate-800';
             div.innerHTML = `<div class="${bg} max-w-[90%] md:max-w-2xl rounded-2xl ${role==='user'?'rounded-tr-none':'rounded-tl-none'} px-5 py-3 shadow-lg overflow-hidden"><div class="prose prose-invert prose-sm max-w-none leading-relaxed font-sans">${content}</div></div>`;
             const box = document.getElementById('chat-container'); box.appendChild(div);
-            if(role === 'assistant') {
+            if(isMarkdown) {
                 const el = div.querySelector('.prose'); Prism.highlightAllUnder(el);
                 renderMathInElement(el, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
             }
             box.scrollTop = box.scrollHeight;
         }
-
-        window.onload = () => { lucide.createIcons(); loadKeys(); };
     </script>
 </body>
 </html>
