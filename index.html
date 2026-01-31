@@ -70,8 +70,9 @@
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-indigo-500 transition-colors cursor-pointer text-slate-200 shadow-sm">
                     <option value="auto" selected>✨ Auto-Select (Smartest)</option>
                     <optgroup label="Manual Override">
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast/Stable)</option>
-                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (New)</option>
+                        <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Newest)</option>
+                        <option value="gemini-1.5-flash-002">Gemini 1.5 Flash-002 (Stable)</option>
+                        <option value="gemini-1.5-pro-002">Gemini 1.5 Pro-002 (Smart)</option>
                         <option value="groq-deepseek">DeepSeek R1 (Math/Logic)</option>
                         <option value="groq-llama">Llama 3 (General)</option>
                     </optgroup>
@@ -238,7 +239,6 @@
             const badge = document.getElementById('key-type-badge');
             const icon = document.getElementById('key-validation-icon');
             
-            // Validation
             const isGemini = val.startsWith("AIza");
             const isGroq = val.startsWith("gsk_");
             const isHF = val.startsWith("hf_");
@@ -399,7 +399,6 @@
             }
         }
         function fillPrompt(txt) { document.getElementById('user-input').value = txt; handleSend(); }
-        
         function setLoadState(active) {
             const pill = document.getElementById('loading-pill'); const text = document.getElementById('loading-text'); const timeDisplay = document.getElementById('timer-display');
             if (active) {
@@ -474,9 +473,9 @@
                 let selectedModel = document.getElementById('model-select').value;
                 let provider = "GEMINI";
                 if (selectedModel === 'auto') {
-                    if (imgData) { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI (VISION)"; }
+                    if (imgData) { selectedModel = 'gemini-2.0-flash-exp'; provider = "GEMINI (VISION)"; } // Switched to 2.0
                     else if (text.match(/solve|math|calculate|code|python|script|function|logic/i)) { selectedModel = 'groq-deepseek'; provider = "DEEPSEEK R1"; }
-                    else { selectedModel = 'gemini-1.5-flash'; provider = "GEMINI"; }
+                    else { selectedModel = 'gemini-2.0-flash-exp'; provider = "GEMINI"; } // Switched to 2.0
                 } else {
                     if (selectedModel.includes('groq')) provider = "GROQ";
                     else if (selectedModel.includes('hf')) provider = "MISTRAL/QWEN";
