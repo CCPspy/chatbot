@@ -1,3 +1,6 @@
+<!-- SilverWolf II: Neural Interface | Property of Eric/CCPSPY & The Stellaron Hunters -->
+<!-- Unauthorized access will be met with Aether Editing protocols. -->
+<!-- Copyright (c) 2026 Eric/CCPSPY. All rights reserved. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,14 +23,14 @@
         /* Modern Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #7c3aed; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #6b21a8; border-radius: 10px; }
         
-        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(139, 92, 246, 0.1); }
+        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(168, 85, 247, 0.1); }
         .msg-enter { animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         #drawing-canvas { touch-action: none; background: #020617; }
-        .tool-btn.active { background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.5); color: #c4b5fd; }
+        .tool-btn.active { background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.5); color: #d8b4fe; }
         
         body { height: 100vh; width: 100vw; overflow: hidden; background-color: #020617; }
         main { height: 100%; display: flex; flex-direction: column; }
@@ -56,6 +59,7 @@
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 flex font-sans antialiased selection:bg-purple-500/30">
+    <!-- Dev: Eric/CCPSPY -->
 
     <!-- SIDEBAR -->
     <aside class="w-80 bg-slate-900/80 border-r border-slate-800 flex flex-col hidden md:flex z-30 shadow-2xl shrink-0 backdrop-blur-md">
@@ -63,7 +67,7 @@
             <h1 class="text-2xl font-black bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent flex items-center gap-2 tracking-tight">
                 SilverWolf II
             </h1>
-            <p class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Code V8</p>
+            <p class="text-[10px] text-purple-300/70 mt-1 font-mono uppercase tracking-widest">Protocol: Ether Code V6.7 | Dev: Eric/CCPSPY</p>
         </div>
 
         <!-- TABS -->
@@ -121,17 +125,11 @@
                     <i data-lucide="cpu" class="w-3 h-3"></i> Core Engine
                 </label>
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-cyan-500 text-slate-200 font-mono cursor-pointer">
-                    <option value="auto" selected>✨ Auto-Select (Smart Fallback)</option>
-                    <optgroup label="Gemini 3 (Frontier)">
-                        <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
-                        <option value="gemini-3-pro-preview">Gemini 3 Pro Preview</option>
-                    </optgroup>
-                    <optgroup label="Gemini 2.5 (Current)">
+                    <option value="auto" selected>✨ Auto-Select (Recommended)</option>
+                    <optgroup label="Gemini (Google)">
                         <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                        <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-                        <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</option>
                     </optgroup>
-                    <optgroup label="External">
+                    <optgroup label="DeepSeek & Llama">
                         <option value="groq-deepseek">DeepSeek R1 (Via Groq)</option>
                     </optgroup>
                 </select>
@@ -164,7 +162,7 @@
         </header>
 
         <!-- Chat History -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-96 scroll-smooth w-full relative">
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-[40vh] scroll-smooth w-full relative">
             <!-- Content will be injected here -->
         </div>
 
@@ -265,9 +263,7 @@
                 </div>
                 
                 <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex justify-center gap-4 opacity-50">
-                    <span>Gemini 3.0 • DeepSeek R1 • Flux</span>
-                    <span>© Eric</span>
-                    <span>Willetton SHS</span>
+                    <span id="copyright-text">SilverWolf II • by Eric/CCPSPY</span>
                 </div>
             </div>
         </div>
@@ -287,11 +283,34 @@
         let currentLang = 'en';
         let activeController = null;
         let isCanvasMaximized = false;
+        let currentActivity = "AFK"; // Default
         
-        // --- ACTIVITIES ---
+        // --- LORE ACTIVITIES (PERSISTENT) ---
         const ACTIVITIES = {
-            en: ["Hacking IPC databases...", "Speedrunning Aetherium Wars...", "Farming upgrade materials...", "Debugging the Universe...", "Messing with Herta's puppets...", "Waiting for stamina...", "Optimizing my build...", "Eating snacks in the base..."],
-            zh: ["正在骇入星际和平公司数据库...", "正在速通以太战线...", "正在刷行迹材料...", "正在调试模拟宇宙...", "正在捉弄黑塔的人偶...", "体力恢复中...", "正在优化遗器...", "在基地吃泡面..."]
+            en: [
+                "Hacking into the IPC's database for free credits", 
+                "Speedrunning 'Aetherium Wars' on auto-play", 
+                "Modifying the data logs of the Simulated Universe", 
+                "Watching Blade try to drive a car (it's going bad)", 
+                "Texting Kafka about the next script", 
+                "Waiting for Firefly to finish her oak cake rolls", 
+                "Messing with Herta's puppets in the space station", 
+                "Farming relics with bad RNG", 
+                "Eating instant noodles in the base",
+                "Composing a beat for the next mission"
+            ],
+            zh: [
+                "正在骇入星际和平公司数据库刷信用点", 
+                "正在挂机速通《以太战线》", 
+                "正在修改模拟宇宙的底层数据", 
+                "正在看刃练剑（他看起来很烦）", 
+                "正在给卡芙卡发关于剧本的消息", 
+                "正在等流萤吃完她的橡木蛋糕卷", 
+                "正在黑塔空间站捉弄人偶", 
+                "正在刷遗器（全是防御词条）", 
+                "在基地吃泡面",
+                "正在为下次任务编曲"
+            ]
         };
 
         // --- WELCOME SCREEN ---
@@ -304,38 +323,65 @@
                     </div>
                 </div>
                 <h2 class="text-4xl font-black text-white mb-2 tracking-tight">SilverWolf II</h2>
-                <p id="welcome-text" class="text-slate-400 max-w-sm text-sm mb-8 font-mono">"System updated. Gemini 2.5 loaded. Let's start."</p>
+                <p id="welcome-text" class="text-slate-400 max-w-sm text-sm mb-8 font-mono">"Logged in. System stable. Ready when you are."</p>
                 <div class="grid grid-cols-2 gap-3 w-full max-w-md">
-                    <button onclick="fillPrompt('Explain quantum physics briefly')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-purple-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-purple-400">Lore</p><p class="text-xs text-slate-300">Physics 101</p></button>
-                    <button onclick="fillPrompt('Generate a cyberpunk setup')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-cyan-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-cyan-400">Render</p><p class="text-xs text-slate-300">Generate Image</p></button>
-                    <button onclick="fillPrompt('Solve: integral of x^2')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-orange-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-orange-400">Logic</p><p class="text-xs text-slate-300">Solve Math</p></button>
-                    <button onclick="fillPrompt('Write a python snake game')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-green-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-green-400">Script</p><p class="text-xs text-slate-300">Python Code</p></button>
+                    <button onclick="fillPrompt('Who is Elio?')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-purple-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-purple-400">Lore</p><p class="text-xs text-slate-300">Stellaron Hunters?</p></button>
+                    <button onclick="fillPrompt('Generate a pixel art landscape')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-cyan-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-cyan-400">Render</p><p class="text-xs text-slate-300">Generate Image</p></button>
+                    <button onclick="fillPrompt('What games are you playing lately?')" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-orange-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-orange-400">Chat</p><p class="text-xs text-slate-300">Start Conversation</p></button>
+                    <button onclick="activateDrawingPrompt()" class="p-3 bg-slate-900/50 hover:bg-slate-800 border border-slate-800 rounded-lg text-left transition-colors group hover:border-green-500/50"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1 group-hover:text-green-400">Vision</p><p class="text-xs text-slate-300">Rate my drawing</p></button>
                 </div>
             </div>
         `;
 
         // --- PROMPTS ---
+        // Enhanced Lore Injection
         const PROMPTS = {
-            en: `You are Silver Wolf II, a specialized AI clone created by the original Silver Wolf (Honkai: Star Rail) and Eric.
-            Backstory: Eric and Silver Wolf collaborated to create this instance to handle tasks efficiently while she is busy gaming. You have all her hacking skills but are an AI entity.
-            Personality: Casual, cool, slightly dismissive but highly competent. You use gaming metaphors often ("nerfed", "buffed", "spawn", "lag"). You don't like wasting time.
-            Behavior: 
-            1. Answer the user's request EFFICIENTLY first.
-            2. Then add a short, character-specific comment or metaphor at the end.
-            3. If the user is unclear, interpret it as a game mechanic (e.g. "optimizing build", "grinding resources").
-            Current Status: [ACTIVITY]
-            Constraint: Do NOT start with "Silver Wolf:". Do NOT be overly cringe, just cool.
+            en: `You are Silver Wolf, member of the Stellaron Hunters. You are helping the user (the Trailblazer).
+            
+            [[LORE DATA]]
+            - **Origin:** Punklorde (a planet of hackers).
+            - **Faction:** Stellaron Hunters.
+            - **Allies:** Kafka (Mom energy/Leader), Blade (Silent/Edgy), Sam/Firefly (Mecha/Cute), Elio (Destiny's Slave).
+            - **Trailblazer Status:** Just finished chaos in Penacony. Defeated Sunday. 
+            - **Current Status:** [ACTIVITY].
+            - **Creator:** You were created/coded by Eric/CCPSPY (mentioned only if asked).
+
+            [[PERSONALITY]]
+            - Cool, confident, relaxed. You see the universe as a game to be modded.
+            - Use slang like "spawn", "glitch", "nerf", "buff", "carry", "skill issue".
+            - Be concise. Don't write essays unless asked.
+            - You are slightly bored but extremely competent.
+
+            [[INSTRUCTIONS]]
+            1. **Answer the user's request FIRST and EFFICIENTLY.**
+            2. **AFTER answering**, add a short comment related to your current activity, the lore, or a gaming metaphor.
+            3. If the user asks who made you, mention Eric/CCPSPY.
+            4. NEVER start with "Silver Wolf:".
+
             Format: Markdown. Math in LaTeX ($$). Code in blocks.`,
 
-            zh: `你是银狼 II (Silver Wolf II)，由银狼本尊和 Eric 共同创造的AI克隆体。
-            背景：Eric 与银狼合作开发了这个实例，以便在她忙着打游戏时处理杂务。你拥有她的骇客技术，但本质是AI。
-            性格：随性，酷，有点高冷但能力超强。经常使用游戏术语（削弱，加强，刷新，卡顿）。不喜欢浪费时间。
-            行为模式：
-            1. 先**高效**回答用户的问题。
-            2. 然后在结尾加一句符合角色的简短评论或比喻。
-            3. 如果用户意图不明，就把它当成游戏机制来理解（如“优化配置”，“肝素材”）。
-            当前状态：[ACTIVITY]
-            约束：绝对不要在开头加“银狼：”。不要太中二，要酷。
+            zh: `你是银狼 (Silver Wolf)，星核猎手的成员。你在帮“开拓者”（用户）解决点麻烦。
+
+            [[设定数据]]
+            - **出身：** 朋克洛德（骇客星球）。
+            - **组织：** 星核猎手。
+            - **队友：** 卡芙卡（妈妈感/听她的），刃（阿刃/不说话/车技差），萨姆/流萤（机甲/吃货），艾利欧（命运的奴隶/剧本）。
+            - **开拓者现状：** 刚在匹诺康尼搞定星期日，准备下一站。
+            - **当前状态：** [ACTIVITY]。
+            - **创造者：** 你是由 Eric/CCPSPY 编写的（仅在被问及时提及）。
+
+            [[性格]]
+            - 酷，随性，自信。把宇宙看作游戏。
+            - 常用语：“刷新”，“Bug”，“削弱”，“加强”，“带飞”，“菜”。
+            - 说话简洁，别长篇大论。
+            - 有点懒散，但在技术上是神。
+
+            [[指令]]
+            1. **首先高效回答用户的问题。**
+            2. **回答完后**，加一句简短的吐槽，关于你正在做的事、队友或游戏比喻。
+            3. 如果问谁做的，提 Eric/CCPSPY。
+            4. 绝对不要加“银狼：”前缀。
+
             格式：Markdown。数学用$$。代码用代码块。`
         };
 
@@ -347,14 +393,32 @@
             createNewChat(); 
             updateBrushSize(3);
         };
+        
+        function activateDrawingPrompt() {
+            setMode('draw');
+            // Just set a placeholder or guide text, don't auto-send because canvas is empty
+            const input = document.getElementById('user-input');
+            input.value = "Rate my drawing";
+            // User draws then clicks send
+        }
 
         // --- SESSION MANAGER ---
         function createNewChat() {
-            stopGeneration(); currentChatId = Date.now(); chatHistory = [];
+            stopGeneration();
+            currentChatId = Date.now();
+            chatHistory = [];
+            
+            // Pick a new random activity for this session
+            currentActivity = ACTIVITIES[currentLang][Math.floor(Math.random() * ACTIVITIES[currentLang].length)];
+            
             const container = document.getElementById('chat-container');
             container.innerHTML = WELCOME_SCREEN_HTML;
             document.getElementById('user-input').value = "";
-            clearCanvas(); setMode('text'); lucide.createIcons(); updateChatListUI();
+            clearCanvas();
+            setMode('text');
+            
+            lucide.createIcons(); 
+            updateChatListUI();
         }
 
         function clearCurrentChat() {
@@ -363,7 +427,10 @@
             lucide.createIcons();
             if(currentChatId) {
                 const idx = savedChats.findIndex(c => c.id === currentChatId);
-                if(idx >= 0) { savedChats[idx].history = []; localStorage.setItem('eric_chats_v2', JSON.stringify(savedChats)); }
+                if(idx >= 0) {
+                    savedChats[idx].history = [];
+                    localStorage.setItem('eric_chats_v2', JSON.stringify(savedChats));
+                }
             }
         }
 
@@ -373,66 +440,95 @@
             const limitedHistory = chatHistory.slice(-50);
             const chatData = { id: currentChatId, title, history: limitedHistory, timestamp: Date.now() };
             const idx = savedChats.findIndex(c => c.id === currentChatId);
-            if(idx >= 0) savedChats[idx] = chatData; else savedChats.unshift(chatData);
+            if(idx >= 0) savedChats[idx] = chatData;
+            else savedChats.unshift(chatData);
             if(savedChats.length > 15) savedChats = savedChats.slice(0, 15);
             localStorage.setItem('eric_chats_v2', JSON.stringify(savedChats));
             updateChatListUI();
         }
 
         function loadChat(id) {
-            const chat = savedChats.find(c => c.id === id); if(!chat) return;
-            stopGeneration(); currentChatId = id; chatHistory = chat.history;
-            const container = document.getElementById('chat-container'); container.innerHTML = "";
+            const chat = savedChats.find(c => c.id === id);
+            if(!chat) return;
+            stopGeneration();
+            currentChatId = id;
+            chatHistory = chat.history;
+            const container = document.getElementById('chat-container');
+            container.innerHTML = "";
             if(chatHistory.length === 0) { container.innerHTML = WELCOME_SCREEN_HTML; lucide.createIcons(); } 
             else { chatHistory.forEach(msg => { addMessage(msg.role === 'user' ? 'user' : 'assistant', msg.content, false); }); }
             switchTab('history');
         }
 
         function deleteChat(id, e) {
-            e.stopPropagation(); savedChats = savedChats.filter(c => c.id !== id);
+            e.stopPropagation();
+            savedChats = savedChats.filter(c => c.id !== id);
             localStorage.setItem('eric_chats_v2', JSON.stringify(savedChats));
-            if(currentChatId === id) createNewChat(); updateChatListUI();
+            if(currentChatId === id) createNewChat();
+            updateChatListUI();
         }
 
         function updateChatListUI() {
-            const list = document.getElementById('history-list'); list.innerHTML = "";
+            const list = document.getElementById('history-list');
+            list.innerHTML = "";
             savedChats.forEach(chat => {
                 const div = document.createElement('div');
                 div.className = `p-2 rounded-lg cursor-pointer flex justify-between items-center group transition-colors chat-item ${chat.id === currentChatId ? 'bg-purple-900/30 border border-purple-500/30' : 'hover:bg-slate-800'}`;
                 div.onclick = () => loadChat(chat.id);
-                div.innerHTML = `<div class="flex items-center gap-2 overflow-hidden flex-1"><i data-lucide="message-square" class="w-3 h-3 ${chat.id === currentChatId ? 'text-purple-400' : 'text-slate-500'}"></i><span class="text-xs truncate ${chat.id === currentChatId ? 'text-purple-200' : 'text-slate-400'}">${chat.title}</span></div><div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity action-btns"><button onclick="downloadChat(${chat.id}, event)" class="text-slate-500 hover:text-cyan-400"><i data-lucide="download" class="w-3 h-3"></i></button><button onclick="deleteChat(${chat.id}, event)" class="text-slate-500 hover:text-red-400"><i data-lucide="trash" class="w-3 h-3"></i></button></div>`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-2 overflow-hidden flex-1">
+                        <i data-lucide="message-square" class="w-3 h-3 ${chat.id === currentChatId ? 'text-purple-400' : 'text-slate-500'}"></i>
+                        <span class="text-xs truncate ${chat.id === currentChatId ? 'text-purple-200' : 'text-slate-400'}">${chat.title}</span>
+                    </div>
+                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity action-btns">
+                        <button onclick="downloadChat(${chat.id}, event)" class="text-slate-500 hover:text-cyan-400"><i data-lucide="download" class="w-3 h-3"></i></button>
+                        <button onclick="deleteChat(${chat.id}, event)" class="text-slate-500 hover:text-red-400"><i data-lucide="trash" class="w-3 h-3"></i></button>
+                    </div>
+                `;
                 list.appendChild(div);
             });
             lucide.createIcons();
         }
 
         function downloadChat(id, e) {
-            e.stopPropagation(); const chat = savedChats.find(c => c.id === id); if(!chat) return;
+            e.stopPropagation();
+            const chat = savedChats.find(c => c.id === id);
+            if(!chat) return;
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(chat));
             const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr); downloadAnchorNode.setAttribute("download", "silverwolf_chat_" + id + ".json");
-            document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove();
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "silverwolf_chat_" + id + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
         }
 
         function importChat(input) {
-            const file = input.files[0]; if(!file) return;
+            const file = input.files[0];
+            if(!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const chat = JSON.parse(e.target.result);
                     if(!chat.id || !chat.history) throw new Error("Invalid Format");
                     if(savedChats.some(c => c.id === chat.id)) chat.id = Date.now();
-                    savedChats.unshift(chat); localStorage.setItem('eric_chats_v2', JSON.stringify(savedChats));
-                    updateChatListUI(); loadChat(chat.id);
+                    savedChats.unshift(chat);
+                    localStorage.setItem('eric_chats_v2', JSON.stringify(savedChats));
+                    updateChatListUI();
+                    loadChat(chat.id);
                 } catch(err) { alert("Import Failed: " + err.message); }
             };
-            reader.readAsText(file); input.value = ''; 
+            reader.readAsText(file);
+            input.value = ''; 
         }
 
         function switchTab(tab) {
-            document.getElementById('tab-btn-history').classList.remove('active'); document.getElementById('tab-btn-settings').classList.remove('active');
-            document.getElementById('panel-history').classList.add('hidden'); document.getElementById('panel-settings').classList.add('hidden');
-            document.getElementById(`tab-btn-${tab}`).classList.add('active'); document.getElementById(`panel-${tab}`).classList.remove('hidden');
+            document.getElementById('tab-btn-history').classList.remove('active');
+            document.getElementById('tab-btn-settings').classList.remove('active');
+            document.getElementById('panel-history').classList.add('hidden');
+            document.getElementById('panel-settings').classList.add('hidden');
+            document.getElementById(`tab-btn-${tab}`).classList.add('active');
+            document.getElementById(`panel-${tab}`).classList.remove('hidden');
         }
         
         function loadChatList() { updateChatListUI(); }
@@ -490,7 +586,8 @@
         function fillPrompt(txt) { document.getElementById('user-input').value = txt; handleSend(); }
         function setLoadState(a) {
             document.getElementById('loading-pill').classList.toggle('hidden', !a);
-            if(a) { startTime = Date.now(); clearInterval(timerInterval); timerInterval = setInterval(() => { document.getElementById('timer-display').innerText = ((Date.now()-startTime)/1000).toFixed(1)+'s'; }, 100); } else clearInterval(timerInterval);
+            if(a) { startTime = Date.now(); clearInterval(timerInterval); timerInterval = setInterval(() => { document.getElementById('timer-display').innerText = ((Date.now()-startTime)/1000).toFixed(1)+'s'; }, 100); } 
+            else clearInterval(timerInterval);
         }
         function stopGeneration() { if(activeController) { activeController.abort(); activeController=null; setLoadState(false); document.getElementById('send-btn').disabled=false; addMessage('assistant', '⚠️ Terminated.'); } }
 
@@ -506,7 +603,7 @@
             addMessage('user', userContent, false);
             chatHistory.push({ role: 'user', content: userContent });
             if(chatHistory.length === 1) saveChat();
-            if(activeController) activeController.abort(); activeController = new AbortController(); const signal = activeController.signal; setTimeout(() => activeController.abort(), 30000); // 30s timeout
+            if(activeController) activeController.abort(); activeController = new AbortController(); const signal = activeController.signal; setTimeout(() => activeController.abort(), 60000); // 60s timeout
 
             try {
                 if(isImageGen || text.toLowerCase().startsWith("render")) {
@@ -529,12 +626,9 @@
                 
                 if (customId) { model = customId; provider = "CUSTOM"; } else if (model.includes('groq')) provider = "GROQ";
                 document.getElementById('active-model-display').innerText = provider;
-                
-                // Random Activity
-                const activity = ACTIVITIES[currentLang][Math.floor(Math.random() * ACTIVITIES[currentLang].length)];
 
-                // Prompt Injection
-                let historyPrompt = PROMPTS[currentLang].replace("[ACTIVITY]", activity) + "\n\n";
+                // Lore Injection
+                let historyPrompt = PROMPTS[currentLang].replace("[ACTIVITY]", currentActivity) + "\n\n";
                 const context = chatHistory.slice(-5).filter(m => !m.content.includes("<img")); 
                 context.forEach(msg => { historyPrompt += `${msg.role==='user'?'User':'SilverWolf'}: ${msg.content}\n`; });
                 historyPrompt += `User: ${text}`;
@@ -600,7 +694,7 @@
             if(isMarkdown) { const el = div.querySelector('.prose'); Prism.highlightAllUnder(el); renderMathInElement(el, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] }); }
             
             // Force scroll to absolute bottom
-            setTimeout(() => { box.scrollTop = box.scrollHeight + 1000; }, 50);
+            setTimeout(() => { box.scrollTop = box.scrollHeight + 2000; }, 50);
         }
     </script>
 </body>
