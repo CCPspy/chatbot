@@ -36,7 +36,8 @@
         .tab-btn { border-bottom: 2px solid transparent; opacity: 0.6; }
         .tab-btn.active { border-bottom: 2px solid #a855f7; opacity: 1; color: #a855f7; }
         
-        .chat-item:hover .delete-btn { opacity: 1; }
+        .chat-item .action-btns { opacity: 0; transition: opacity 0.2s; }
+        .chat-item:hover .action-btns { opacity: 1; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 flex font-sans antialiased selection:bg-purple-500/30">
@@ -58,9 +59,16 @@
 
         <!-- PANEL: HISTORY -->
         <div id="panel-history" class="flex-1 overflow-y-auto p-3 space-y-2">
-            <button onclick="createNewChat()" class="w-full py-2.5 px-3 bg-purple-600 hover:bg-purple-500 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-900/20">
-                <i data-lucide="plus" class="w-4 h-4"></i> NEW SESSION
-            </button>
+            <div class="flex gap-2">
+                <button onclick="createNewChat()" class="flex-1 py-2.5 px-3 bg-purple-600 hover:bg-purple-500 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-900/20">
+                    <i data-lucide="plus" class="w-4 h-4"></i> NEW
+                </button>
+                <button onclick="document.getElementById('import-file').click()" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-all border border-slate-700" title="Import Session">
+                    <i data-lucide="upload" class="w-4 h-4"></i>
+                </button>
+                <input type="file" id="import-file" class="hidden" accept=".json" onchange="importChat(this)">
+            </div>
+            
             <div id="history-list" class="space-y-1 mt-2">
                 <!-- Injected via JS -->
             </div>
@@ -381,15 +389,54 @@
                 div.className = `p-2 rounded-lg cursor-pointer flex justify-between items-center group transition-colors chat-item ${chat.id === currentChatId ? 'bg-purple-900/30 border border-purple-500/30' : 'hover:bg-slate-800'}`;
                 div.onclick = () => loadChat(chat.id);
                 div.innerHTML = `
-                    <div class="flex items-center gap-2 overflow-hidden">
+                    <div class="flex items-center gap-2 overflow-hidden flex-1">
                         <i data-lucide="message-square" class="w-3 h-3 ${chat.id === currentChatId ? 'text-purple-400' : 'text-slate-500'}"></i>
                         <span class="text-xs truncate ${chat.id === currentChatId ? 'text-purple-200' : 'text-slate-400'}">${chat.title}</span>
                     </div>
-                    <button onclick="deleteChat(${chat.id}, event)" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 delete-btn"><i data-lucide="trash" class="w-3 h-3"></i></button>
+                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity action-btns">
+                        <button onclick="downloadChat(${chat.id}, event)" class="text-slate-500 hover:text-cyan-400"><i data-lucide="download" class="w-3 h-3"></i></button>
+                        <button onclick="deleteChat(${chat.id}, event)" class="text-slate-500 hover:text-red-400"><i data-lucide="trash" class="w-3 h-3"></i></button>
+                    </div>
                 `;
                 list.appendChild(div);
             });
             lucide.createIcons();
+        }
+
+        function downloadChat(id, e) {
+            e.stopPropagation();
+            const chat = savedChats.find(c => c.id === id);
+            if(!chat) return;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(chat));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href",     dataStr);
+            downloadAnchorNode.setAttribute("download", "silverwolf_chat_" + id + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importChat(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const chat = JSON.parse(e.target.result);
+                    if(!chat.id || !chat.history) throw new Error("Invalid Format");
+                    
+                    if(savedChats.some(c => c.id === chat.id)) chat.id = Date.now();
+                    
+                    savedChats.unshift(chat);
+                    localStorage.setItem('eric_chats_v2', JSON.stringify(savedChats));
+                    updateChatListUI();
+                    loadChat(chat.id);
+                } catch(err) {
+                    alert("Import Failed: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+            input.value = ''; 
         }
 
         function switchTab(tab) {
@@ -578,6 +625,9 @@
             addMessage('user', userContent, false);
             chatHistory.push({ role: 'user', content: userContent });
             
+            // Ensure session is saved/created immediately so we have an ID
+            if(chatHistory.length === 1) saveChat();
+
             // Abort Controller
             if(activeController) activeController.abort();
             activeController = new AbortController();
