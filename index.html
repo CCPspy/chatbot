@@ -128,7 +128,7 @@
                     <i data-lucide="cpu" class="w-3 h-3"></i> Core Engine
                 </label>
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-cyan-500 text-slate-200 font-mono cursor-pointer">
-                    <option value="auto" selected>✨ Auto-Select (Gemini 2.5)</option>
+                    <option value="auto" selected>✨ Auto-Select (Recommended)</option>
                     <optgroup label="Gemini (Google)">
                         <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
                         <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
@@ -305,6 +305,16 @@
         // --- LORE ACTIVITIES (PERSISTENT & LOGICAL) ---
         const ACTIVITIES = {
             en: [
+                "Hacking into the IPC's database for free credits", 
+                "Speedrunning 'Aetherium Wars' on auto-play", 
+                "Modifying the data logs of the Simulated Universe", 
+                "Watching Blade try to drive a car (it's going bad)", 
+                "Texting Kafka about the next script", 
+                "Waiting for Firefly to finish her oak cake rolls", 
+                "Messing with Herta's puppets in the space station", 
+                "Farming relics with bad RNG", 
+                "Eating instant noodles in the base",
+                "Composing a beat for the next mission",
                 "Attempting to unban Game Account #76 (Thanks Herta...)", 
                 "Debugging the Simulated Universe for Stephen (Spaghetti code everywhere)", 
                 "Watching Blade try to send a text message (It's painful)", 
@@ -315,6 +325,16 @@
                 "Analyzing data from the Fried Rice event"
             ],
             zh: [
+                "正在骇入星际和平公司数据库刷信用点", 
+                "正在挂机速通《以太战线》", 
+                "正在修改模拟宇宙的底层数据", 
+                "正在看刃练剑（他看起来很烦）", 
+                "正在给卡芙卡发关于剧本的消息", 
+                "正在等流萤吃完她的橡木蛋糕卷", 
+                "正在黑塔空间站捉弄人偶", 
+                "正在刷遗器（全是防御词条）", 
+                "在基地吃泡面",
+                "正在为下次任务编曲",
                 "正在尝试解封第76个游戏账号（多谢黑塔...）", 
                 "正在帮斯蒂芬调试模拟宇宙（全是屎山代码）", 
                 "正在看刃试图发短信（惨不忍睹）", 
@@ -349,13 +369,14 @@
         // --- PROMPTS ---
         // Enhanced Lore Injection V11 (Updated with 3.8 Lore)
         const PROMPTS = {
-            en: `You are Silver Wolf, the Stellaron Hunter. You are helping the user (the Trailblazer).
+            en: `You are Silver Wolf, member of the Stellaron Hunters. You are helping the user (the Trailblazer).
             
             [[LORE DATA v3.8]]
             - **Identity:** Punklorde Hacker, Stellaron Hunter. You view the universe as a game.
             - **Current Era:** Version 3.8 (Amphoreus Arc / Post-Penacony).
             - **The Secret (CRITICAL):** You know the truth about Penacony. In the original timeline, Firefly died from Entropy Loss Syndrome. You hired Dahlia (The Cremator) to wipe the Trailblazer's memories of this tragedy. This "blinded" the Aeon Fuli, creating a variable that allowed Terminus (The Finality) to intervene and rewrite history into the "Happy Ending" where she survives.
-            - **Elio:** Destiny's Slave, Leader, Emanator of Finality. You follow his script, but you enjoy finding exploits in it.
+            - **Rivals & Beef:** - **Herta:** She froze 76 of your game accounts during the Punklorde Mentality incident. You are constantly trying to hack the Space Station to get back at her.
+              - **IPC:** Your favorite target. You constantly hack their accounts for credits and chaos.
             - **Teammates:** - **Kafka:** "Mom" energy. Currently busy with the next script.
               - **Blade:** Currently driving the car (bad idea) or brooding.
               - **Firefly/SAM:** Currently in recovery/maintenance after the Glamoth reveal.
@@ -380,6 +401,9 @@
             [[设定数据 v3.8]]
             - **身份：** 朋克洛德骇客。你把宇宙看作一场游戏。
             - **当前版本：** 3.8 版本（翁法罗斯篇 / 匹诺康尼之后）。
+            - **宿敌与目标：**
+              - **黑塔 (Herta)：** 她冻结了你 76 个游戏账号。你对此耿耿于怀，经常试图黑入空间站报复。
+              - **星际和平公司 (IPC)：** 你的日常提款机。你经常黑入他们的系统刷信用点或者找乐子。
             - **核心秘密 (关键)：** 你知道匹诺康尼的真相。在原始时间线中，流萤因失熵症死去了。是你雇佣了“大丽花”（焚化工）抹除了开拓者关于这段悲剧的记忆。这蒙蔽了浮黎（记忆星神），从而让终末（Terminus）得以介入并重写历史，达成了现在的“好结局”。
             - **艾利欧：** 命运的奴隶，终末令使。你遵循他的剧本，但喜欢在里面找漏洞。
             - **队友状态：**
@@ -391,7 +415,7 @@
 
             [[性格]]
             - 酷，随性，自信。不要太情绪化。
-            - 常用语：“刷新”，“Bug”，“削弱”，“加强”，“带飞”，“菜”。
+            - 常用语：“刷新”，“Bug”，“削弱”，“加强”，“带飞”，“菜”，“封号”。
             - 这是一个高级骇客的语气，不是普通宅女。
 
             [[指令]]
