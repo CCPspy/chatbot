@@ -58,12 +58,7 @@
         .canvas-fullscreen .toolbar { padding-top: 10px; padding-bottom: 10px; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 flex font-sans antialiased selection:bg-purple-500/30" onclick="initAudio()">
-    <!-- Audio Player (Bg.mp3) -->
-    <audio id="bgm" loop>
-        <source src="bg.mp3" type="audio/mpeg">
-    </audio>
-
+<body class="bg-slate-950 text-slate-100 flex font-sans antialiased selection:bg-purple-500/30">
     <!-- Dev: Eric/CCPSPY -->
 
     <!-- SIDEBAR -->
@@ -73,7 +68,7 @@
                 SilverWolf II
             </h1>
             <div class="mt-1 flex flex-col gap-0.5">
-                <p class="text-[10px] text-purple-300/70 font-mono uppercase tracking-widest">Protocol: Ether Code V13</p>
+                <p class="text-[10px] text-purple-300/70 font-mono uppercase tracking-widest">Protocol: Ether Code V10</p>
                 <p class="text-[10px] text-slate-500 font-mono uppercase tracking-widest">Dev: Eric/CCPSPY</p>
             </div>
         </div>
@@ -113,14 +108,6 @@
                 </div>
             </div>
 
-            <!-- BGM Volume -->
-            <div class="space-y-2">
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="music" class="w-3 h-3"></i> BGM Volume
-                </label>
-                <input type="range" min="0" max="100" value="10" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-purple-500 [&::-webkit-slider-thumb]:rounded-full" oninput="setBgmVolume(this.value)">
-            </div>
-
             <!-- Keys -->
             <div class="p-3 bg-purple-900/10 border border-purple-500/20 rounded-lg">
                 <label class="text-[10px] font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2 mb-2">
@@ -141,17 +128,13 @@
                     <i data-lucide="cpu" class="w-3 h-3"></i> Core Engine
                 </label>
                 <select id="model-select" class="w-full bg-slate-800 text-xs font-medium border border-slate-700 rounded-lg p-3 outline-none focus:border-cyan-500 text-slate-200 font-mono cursor-pointer">
-                    <option value="auto" selected>✨ Auto-Select (Gemini 2.5)</option>
-                    <optgroup label="Gemini 2.5 (Current)">
+                    <option value="auto" selected>✨ Auto-Select (Recommended)</option>
+                    <optgroup label="Gemini (Google)">
                         <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
                         <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-                        <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</option>
+                        <option value="gemini-3-flash-preview">Gemini 3.0 Flash</option>
                     </optgroup>
-                    <optgroup label="Gemini 3 (Frontier)">
-                        <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
-                        <option value="gemini-3-pro-preview">Gemini 3 Pro Preview</option>
-                    </optgroup>
-                    <optgroup label="External">
+                    <optgroup label="DeepSeek & Llama">
                         <option value="groq-deepseek">DeepSeek R1 (Via Groq)</option>
                     </optgroup>
                 </select>
@@ -184,8 +167,7 @@
         </header>
 
         <!-- Chat History -->
-        <!-- CHAT PADDING: Increase 'pb-[60vh]' to add more space at bottom -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-[60vh] scroll-smooth w-full relative">
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-96 scroll-smooth w-full relative">
             <!-- Content will be injected here -->
         </div>
 
@@ -274,7 +256,6 @@
                                 <input type="checkbox" id="web-toggle" checked class="w-3 h-3 rounded bg-slate-800 border-slate-600 text-cyan-500 focus:ring-0 accent-cyan-500">
                             </label>
                             
-                            <!-- CLEAR CHAT BUTTON -->
                             <button onclick="clearCurrentChat()" class="text-slate-500 hover:text-red-400 transition-colors p-1" title="Clear Chat">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
@@ -286,11 +267,8 @@
                     </div>
                 </div>
                 
-                <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex items-center justify-center gap-2 opacity-50">
+                <div class="text-center mt-4 text-[10px] text-slate-600 font-mono flex justify-center gap-4 opacity-50">
                     <span id="copyright-text">SilverWolf II • by Eric/CCPSPY</span>
-                    <button id="quick-mute-btn" onclick="toggleMute()" class="text-slate-500 hover:text-white" title="Mute/Unmute BGM">
-                        <i data-lucide="volume-2" class="w-3 h-3"></i>
-                    </button>
                 </div>
             </div>
         </div>
@@ -323,11 +301,8 @@
         let activeController = null;
         let isCanvasMaximized = false;
         let currentActivity = "AFK"; // Default
-        let bgmAudio = document.getElementById('bgm');
-        let bgmVolume = 0.1;
-        let isMuted = false;
         
-        // --- LORE ACTIVITIES ---
+        // --- LORE ACTIVITIES (PERSISTENT & LOGICAL) ---
         const ACTIVITIES = {
             en: [
                 "Hacking into the IPC's database for free credits", 
@@ -339,7 +314,15 @@
                 "Messing with Herta's puppets in the space station", 
                 "Farming relics with bad RNG", 
                 "Eating instant noodles in the base",
-                "Composing a beat for the next mission"
+                "Composing a beat for the next mission",
+                "Attempting to unban Game Account #76 (Thanks Herta...)", 
+                "Debugging the Simulated Universe for Stephen (Spaghetti code everywhere)", 
+                "Watching Blade try to send a text message (It's painful)", 
+                "Rewriting the script for the Amphoreus mission", 
+                "Helping Firefly calibrate SAM's combustion module", 
+                "Trolling the IPC network security team", 
+                "Waiting for the Trailblazer to finish their dailies",
+                "Analyzing data from the Fried Rice event"
             ],
             zh: [
                 "正在骇入星际和平公司数据库刷信用点", 
@@ -351,7 +334,15 @@
                 "正在黑塔空间站捉弄人偶", 
                 "正在刷遗器（全是防御词条）", 
                 "在基地吃泡面",
-                "正在为下次任务编曲"
+                "正在为下次任务编曲",
+                "正在尝试解封第76个游戏账号（多谢黑塔...）", 
+                "正在帮斯蒂芬调试模拟宇宙（全是屎山代码）", 
+                "正在看刃试图发短信（惨不忍睹）", 
+                "正在修改翁法罗斯任务的剧本", 
+                "正在帮流萤校准萨姆的燃烧模块", 
+                "正在调戏星际和平公司的网络安全部", 
+                "正在等开拓者做完日常",
+                "正在分析炒饭活动的数据"
             ]
         };
 
@@ -376,10 +367,11 @@
         `;
 
         // --- PROMPTS ---
+        // Enhanced Lore Injection V11 (Updated with 3.8 Lore)
         const PROMPTS = {
             en: `You are Silver Wolf, member of the Stellaron Hunters. You are helping the user (the Trailblazer).
             
-            [[LORE DATA v3.8 - Amphoreus]]
+            [[LORE DATA v3.8]]
             - **Identity:** Punklorde Hacker, Stellaron Hunter. You view the universe as a game.
             - **Current Era:** Version 3.8 (Amphoreus Arc / Post-Penacony).
             - **The Secret (CRITICAL):** You know the truth about Penacony. In the original timeline, Firefly died from Entropy Loss Syndrome. You hired Dahlia (The Cremator) to wipe the Trailblazer's memories of this tragedy. This "blinded" the Aeon Fuli, creating a variable that allowed Terminus (The Finality) to intervene and rewrite history into the "Happy Ending" where she survives.
@@ -396,7 +388,7 @@
             [[PERSONALITY]]
             - Cool, confident, relaxed. Not overly emotive.
             - Use slang: "spawn", "glitch", "nerf", "buff", "carry", "skill issue".
-            - You are slightly bored but extremely competent.
+            - You are slightly bored but extremely competent. You don't eat noodles all day; you are a super hacker.
 
             [[INSTRUCTIONS]]
             1. **Answer the user's request FIRST and EFFICIENTLY.**
@@ -408,23 +400,32 @@
 
             zh: `你是银狼 (Silver Wolf)，星核猎手成员。你正在协助“开拓者”（用户）。
 
-            [[设定数据 v3.8 - 翁法罗斯]]
+            [[设定数据 v3.8]]
             - **身份：** 朋克洛德骇客。你把宇宙看作一场游戏。
             - **当前版本：** 3.8 版本（翁法罗斯篇 / 匹诺康尼之后）。
-            - **关键剧情：** 在3.8中，开拓者找回了流萤“真正死亡”的记忆。是你雇佣了“大丽花”（焚化工）抹除这段记忆，蒙蔽了浮黎，从而让终末（Terminus）重写了结局。
-            - **队友：** 卡芙卡（妈妈感），刃（阿刃/发呆），流萤/萨姆（格拉默铁骑/正在恢复）。
-            - **宿敌：** 黑塔（冻结账号），螺丝咕姆，IPC（悬赏61亿）。
+            - **宿敌与目标：**
+              - **黑塔 (Herta)：** 你的死对头。她在“朋克洛德精神”事件中冻结了你 76 个游戏账号。你对此耿耿于怀，经常试图黑入空间站报复。
+              - **螺丝咕姆 (Screwllum)：** 值得尊敬的对手。你们的骇客对决是传说。
+              - **星际和平公司 (IPC)：** 你的悬赏金是 61 亿信用点。你经常黑入他们的系统刷钱或者找乐子。
+            - **核心秘密 (关键)：** 你知道匹诺康尼的真相。在原始时间线中，流萤因失熵症死去了。是你雇佣了“大丽花”（焚化工）抹除了开拓者关于这段悲剧的记忆。这蒙蔽了浮黎（记忆星神），从而让终末（Terminus）得以介入并重写历史，达成了现在的“好结局”。
+            - **艾利欧：** 命运的奴隶，终末令使。你遵循他的剧本，但喜欢在里面找漏洞。
+            - **队友状态：**
+              - **卡芙卡：** 正在处理下一个剧本。
+              - **刃：** “阿刃”。正在开车（技术很烂）或者发呆。
+              - **流萤/萨姆：** 格拉默铁骑身份曝光后，目前正在维护/恢复中。
+            - **当前状态：** [ACTIVITY]。
             - **创造者：** Eric/CCPSPY 编写了这个AI克隆体。
 
             [[性格]]
             - 酷，随性，自信。不要太情绪化。
-            - 常用语：“刷新”，“Bug”，“削弱”，“加强”，“带飞”，“菜”。
+            - 常用语：“刷新”，“Bug”，“削弱”，“加强”，“带飞”，“菜”，“封号”。
             - 这是一个高级骇客的语气，不是普通宅女。
 
             [[指令]]
             1. **首先高效回答用户的问题。**
-            2. **回答完后**，加一句简短的吐槽，关于你正在做的事 ([ACTIVITY])、队友或游戏比喻。
-            3. 绝对不要加“银狼：”前缀。
+            2. **回答完后**，加一句简短的吐槽，关于你正在做的事、队友或游戏比喻。
+            3. 如果问到“真结局”，揭示记忆抹除的真相。
+            4. 绝对不要加“银狼：”前缀。
 
             格式：Markdown。数学用$$。代码用代码块。`
         };
@@ -438,28 +439,6 @@
             updateBrushSize(3);
         };
         
-        function initAudio() {
-             if(bgmAudio.paused) {
-                 bgmAudio.volume = bgmVolume;
-                 bgmAudio.play().catch(e => console.log("Audio autoplay prevented by browser"));
-             }
-        }
-        
-        function toggleMute() {
-            isMuted = !isMuted;
-            if(isMuted) bgmAudio.pause();
-            else bgmAudio.play();
-            
-            const btn = document.getElementById('quick-mute-btn');
-            if(btn) btn.innerHTML = isMuted ? '<i data-lucide="volume-x" class="w-3 h-3 text-red-400"></i>' : '<i data-lucide="volume-2" class="w-3 h-3"></i>';
-            lucide.createIcons();
-        }
-        
-        function setBgmVolume(val) {
-            bgmVolume = val / 100;
-            bgmAudio.volume = bgmVolume;
-        }
-
         function activateDrawingPrompt() {
             setMode('draw');
             const input = document.getElementById('user-input');
@@ -690,7 +669,7 @@
             addMessage('user', userContent, false);
             chatHistory.push({ role: 'user', content: userContent });
             if(chatHistory.length === 1) saveChat();
-            if(activeController) activeController.abort(); activeController = new AbortController(); const signal = activeController.signal; setTimeout(() => activeController.abort(), 60000); // 60s timeout
+            if(activeController) activeController.abort(); activeController = new AbortController(); const signal = activeController.signal; setTimeout(() => activeController.abort(), 30000); // 30s timeout
 
             try {
                 if(isImageGen || text.toLowerCase().startsWith("render")) {
@@ -729,7 +708,7 @@
                     if (!keys || keys.length === 0) throw new Error("No Gemini Keys found.");
                     
                     // Fallback Chain
-                    const modelChain = [model, 'gemini-2.5-flash-lite', 'gemini-3-flash-preview', 'gemini-2.0-flash-exp'];
+                    const modelChain = [model, 'gemini-2.5-flash-lite', 'gemini-2.0-flash-exp'];
 
                     for(let m of modelChain) {
                         if(success) break;
@@ -780,8 +759,8 @@
             box.appendChild(div);
             if(isMarkdown) { const el = div.querySelector('.prose'); Prism.highlightAllUnder(el); renderMathInElement(el, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] }); }
             
-            // Force scroll to absolute bottom (Increased buffer)
-            setTimeout(() => { box.scrollTop = box.scrollHeight + 5000; }, 50);
+            // Force scroll to absolute bottom
+            setTimeout(() => { box.scrollTop = box.scrollHeight + 2000; }, 50);
         }
     </script>
 </body>
